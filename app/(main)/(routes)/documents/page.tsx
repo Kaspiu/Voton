@@ -34,7 +34,7 @@ const DocumentsPage = () => {
 
       <h1 className="text-2xl font-bold">Welcome to Voton!</h1>
 
-      <h3 className="text-lg font-medium">What's on your mind today?</h3>
+      <h3 className="text-lg font-medium">What&apos;s on your mind today?</h3>
 
       <Button onClick={onCreate} className="cursor-pointer mt-4" size="lg">
         <CirclePlus />
