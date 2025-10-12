@@ -20,6 +20,10 @@ A privacy-focused note-taking web application inspired by Notion. Built with Nex
 
 - [Voton](https://voton.vercel.app/)
 
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
 ## Authors
 
 - [@Kaspiu](https://github.com/Kaspiu)

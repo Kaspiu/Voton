@@ -4,10 +4,7 @@ const Footer = () => {
   return (
     <div className="flex w-full items-center justify-between bg-background p-6">
       <Logo />
-      <p className="text-sm font-medium text-ring">
-        © 2025 Voton
-        <span className="max-sm:hidden">. All Rights Reserved.</span>
-      </p>
+      <p className="text-sm font-medium text-ring">© 2025 Voton</p>
     </div>
   );
 };
