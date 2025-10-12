@@ -26,8 +26,8 @@ export const CoverImage = ({ initialData }: CoverImageProps) => {
   return (
     <div
       className={cn(
-        "group relative h-[calc(30vh+70px)] w-full",
-        !initialData.coverImage && "h-[calc(15vh+70px)]"
+        "group relative h-[calc(30vh+62px)] w-full",
+        !initialData.coverImage && "h-[calc(15vh+62px)]"
       )}
     >
       {!!initialData.coverImage && (

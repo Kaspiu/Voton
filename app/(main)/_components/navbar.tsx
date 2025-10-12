@@ -66,7 +66,7 @@ export const Navbar = ({ isCollapsed, onResetWidth }: NavbarProps) => {
 
   return (
     <>
-      <nav className="flex w-full items-center gap-4 bg-background p-4 pt-6">
+      <nav className="flex w-full items-center gap-4 bg-background p-4">
         {isCollapsed && (
           <div
             onClick={onResetWidth}

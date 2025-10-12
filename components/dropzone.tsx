@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 interface ImageDropzoneProps {
-  onImageSelect?: (file: File) => void;
+  onImageSelect?: (base64Url: string) => void;
   className?: string;
 }
 
@@ -44,9 +44,17 @@ export const ImageDropzone: React.FC<ImageDropzoneProps> = ({
 
       if (acceptedFiles.length > 0) {
         const file = acceptedFiles[0];
-        const url = URL.createObjectURL(file);
-        setPreviewUrl(url);
-        onImageSelect?.(file);
+        const objectUrl = URL.createObjectURL(file);
+        setPreviewUrl(objectUrl);
+
+        if (onImageSelect) {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            const base64Url = reader.result as string;
+            onImageSelect(base64Url);
+          };
+          reader.readAsDataURL(file);
+        }
       }
     },
     [onImageSelect]

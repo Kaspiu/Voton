@@ -127,12 +127,12 @@ const Navigation = () => {
       <aside
         ref={sidebarRef}
         className={cn(
-          "relative z-50 flex min-h-screen w-60 flex-col overflow-y-auto bg-secondary text-muted-foreground",
+          "sticky top-0 left-0 z-50 flex h-screen w-60 flex-col overflow-y-auto bg-secondary text-muted-foreground",
           isResetting && "transition-all duration-300 ease-in-out",
           isMobile && "w-0"
         )}
       >
-        <div className="flex items-center justify-between pt-6 pl-4 pr-3">
+        <div className="flex items-center justify-between pt-4 pl-4 pr-3">
           <Link href="/" className="shrink-0">
             <Logo size="sm" className="text-primary" />
           </Link>
@@ -164,7 +164,7 @@ const Navigation = () => {
           WORKSPACE
         </p>
 
-        <div className="py-2">
+        <div className="py-2 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-secondary [&::-webkit-scrollbar-thumb]:bg-muted-foreground/15 [&::-webkit-scrollbar-thumb]:rounded-md">
           <DocumentsList />
         </div>
 
@@ -178,7 +178,7 @@ const Navigation = () => {
       <div
         ref={navbarRef}
         className={cn(
-          "absolute top-0 left-60 z-50 w-[calc(100%_-_240px)]",
+          "fixed top-0 left-60 z-50 w-[calc(100%_-_240px)]",
           isResetting && "transition-all duration-300 ease-in-out",
           isMobile && "left-0 w-full"
         )}

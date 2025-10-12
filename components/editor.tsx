@@ -1,6 +1,10 @@
 "use client";
 
-import { PartialBlock } from "@blocknote/core";
+import {
+  BlockNoteSchema,
+  defaultBlockSpecs,
+  PartialBlock,
+} from "@blocknote/core";
 import { BlockNoteView } from "@blocknote/mantine";
 import { useCreateBlockNote } from "@blocknote/react";
 
@@ -15,15 +19,35 @@ interface EditorProps {
 export default function Editor({ onChange, initialData }: EditorProps) {
   // Handles file uploads to the editor.
   const handleUpload = async (file: File) => {
-    const url = URL.createObjectURL(file);
-    return url;
+    return new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+
+      reader.onloadend = () => {
+        resolve(reader.result as string);
+      };
+
+      reader.onerror = reject;
+
+      reader.readAsDataURL(file);
+    });
   };
+
+  // Remove the file block from the default schema
+  const { file, ...remainingBlockSpecs } = defaultBlockSpecs;
+
+  const schema = BlockNoteSchema.create({
+    blockSpecs: {
+      ...remainingBlockSpecs,
+    },
+  });
 
   // Creates and configures the BlockNote editor instance.
   const editor = useCreateBlockNote({
+    schema,
     initialContent: initialData
       ? (JSON.parse(initialData) as PartialBlock[])
       : undefined,
+    disableExtensions: ["dropFile"],
     uploadFile: handleUpload,
   });
 
