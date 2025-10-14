@@ -56,7 +56,6 @@ export const SettingsModal = () => {
   // Handles the data import process, shows a toast notification, and navigates on success.
   const onImportData = () => {
     const promise = importData().then(() => {
-      router.push(`/documents`);
       onClose();
     });
 

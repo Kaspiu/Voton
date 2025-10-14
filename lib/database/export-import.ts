@@ -43,7 +43,7 @@ export async function exportData(): Promise<void> {
   }
 }
 
-// Imports user data from a JSON file after clearing existing data.
+// Imports user data from a JSON file.
 export async function importData(): Promise<void> {
   return new Promise((resolve, reject) => {
     const input = document.createElement("input");
@@ -100,8 +100,6 @@ export async function importData(): Promise<void> {
             if (!validateExportData(data)) {
               throw new Error("Invalid export file format");
             }
-
-            await clearAllData();
 
             const db = await getDB();
             const tx = db.transaction("pages", "readwrite");
