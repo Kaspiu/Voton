@@ -18,7 +18,7 @@ export async function exportData(): Promise<void> {
     const exportTimestamp = new Date().toISOString();
     const exportDate = exportTimestamp.split("T")[0];
     const data: VotonExportData = {
-      version: "1.0.0",
+      version: "1.0.1",
       exportDate: exportTimestamp,
       pages,
     };
