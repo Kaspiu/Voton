@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Voton",
-  description: "Private note-taking workspace.",
+  description: "Private note-taking workspace",
   icons: {
     icon: [
       {
