@@ -29,7 +29,7 @@ const Navbar = () => {
   return (
     <div
       className={cn(
-        "fixed top-0 z-50 flex w-full items-center justify-between bg-background p-6 text-primary transition-all duration-300 cursor-default",
+        "fixed top-0 z-50 flex w-full items-center justify-between bg-background p-6 text-primary transition-all duration-300 cursor-default dark:bg-[#1F1F1F]",
         scrolled && "shadow-md rounded-b-md"
       )}
     >

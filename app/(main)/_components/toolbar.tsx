@@ -78,7 +78,7 @@ export const Toolbar = ({ initialData }: ToolbarProps) => {
             <Button
               variant="outline"
               size="sm"
-              className="cursor-pointer text-muted-foreground text-xs"
+              className="cursor-pointer text-xs text-muted-foreground"
             >
               <SmilePlus className="h-4 w-4" />
               Add icon
@@ -90,7 +90,7 @@ export const Toolbar = ({ initialData }: ToolbarProps) => {
             onClick={onCoverImageOpen}
             variant="outline"
             size="sm"
-            className="cursor-pointer text-muted-foreground text-xs"
+            className="cursor-pointer text-xs text-muted-foreground"
           >
             <ImagePlus className="h-4 w-4" />
             Add cover
@@ -109,7 +109,7 @@ export const Toolbar = ({ initialData }: ToolbarProps) => {
             onClick={onEmojiDelete}
             variant="outline"
             size="icon"
-            className="cursor-pointer rounded-xl text-muted-foreground text-xs opacity-0 transition-all group-hover/icon:opacity-100 max-md:opacity-100"
+            className="cursor-pointer rounded-xl text-xs text-muted-foreground opacity-0 transition-all group-hover/icon:opacity-100 max-md:opacity-100"
           >
             <X className="h-4 w-4" />
           </Button>
@@ -123,13 +123,13 @@ export const Toolbar = ({ initialData }: ToolbarProps) => {
           onBlur={disableInput}
           onKeyDown={onEnterKeyDown}
           onChange={onChange}
-          className="flex w-full items-center text-6xl font-bold text-[#373737] focus:outline-none"
+          className="flex w-full items-center text-6xl font-bold text-[#3F3F3F] focus:outline-none dark:text-[#CFCFCF]"
         />
       ) : (
         <div
           role="button"
           onClick={enableInput}
-          className="flex h-[80px] max-w-fit items-center truncate text-6xl font-bold text-[#373737]"
+          className="flex h-[80px] max-w-fit items-center truncate text-6xl font-bold text-[#3F3F3F] dark:text-[#CFCFCF]"
         >
           {initialData.title}
         </div>

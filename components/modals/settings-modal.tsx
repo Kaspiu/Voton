@@ -17,6 +17,8 @@ import {
   exportData,
   importData,
 } from "@/lib/database/export-import";
+import { ModeToggle } from "../mode-toggle";
+import { Separator } from "../ui/separator";
 
 interface SettingsItemProps {
   itemTitle: string;
@@ -93,9 +95,10 @@ export const SettingsModal = () => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent>
-        <DialogHeader className="border-b pb-3">
+        <DialogHeader className="border-b pb-4">
           <DialogTitle>Workspace settings</DialogTitle>
         </DialogHeader>
+        <p className="text-lg font-semibold leading-none">Data management</p>
         <div className="flex flex-col gap-4">
           <SettingsItem
             itemTitle="Import data"
@@ -115,6 +118,17 @@ export const SettingsModal = () => {
             itemBtnText="Clear"
             itemFunc={onClearData}
           />
+        </div>
+        <Separator />
+        <p className="text-lg font-semibold leading-none">Appearance</p>
+        <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-2">
+            <Label>Theme</Label>
+            <span className="text-muted-foreground text-xs">
+              Switch between light and dark mode
+            </span>
+          </div>
+          <ModeToggle />
         </div>
       </DialogContent>
     </Dialog>

@@ -4,7 +4,7 @@ import Heroes from "./_components/heroes";
 
 const LandingPage = () => {
   return (
-    <div className="bg-background cursor-default flex flex-col items-center text-primary w-full">
+    <div className="flex w-full flex-col items-center bg-background pt-24 text-primary cursor-default dark:bg-[#1F1F1F]">
       <div className="flex flex-col items-center w-full">
         <Heading />
         <Heroes />

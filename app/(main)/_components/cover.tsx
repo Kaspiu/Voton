@@ -44,7 +44,7 @@ export const CoverImage = ({ initialData }: CoverImageProps) => {
             onClick={onChange}
             variant="outline"
             size="sm"
-            className="cursor-pointer text-xs text-muted-foreground"
+            className="text-xs text-muted-foreground cursor-pointer dark:bg-[#292929] dark:hover:bg-[#303030]"
           >
             <ImageUp className="h-4 w-4" />
             Change cover
@@ -53,7 +53,7 @@ export const CoverImage = ({ initialData }: CoverImageProps) => {
             onClick={onRemove}
             variant="outline"
             size="sm"
-            className="cursor-pointer text-xs text-muted-foreground"
+            className="text-xs text-muted-foreground cursor-pointer dark:bg-[#292929] dark:hover:bg-[#303030]"
           >
             <X className="h-4 w-4" />
             Remove

@@ -66,7 +66,7 @@ export const Navbar = ({ isCollapsed, onResetWidth }: NavbarProps) => {
 
   return (
     <>
-      <nav className="flex w-full items-center gap-4 bg-background p-4">
+      <nav className="flex w-full items-center gap-4 bg-background p-4 dark:bg-[#1F1F1F]">
         {isCollapsed && (
           <div
             onClick={onResetWidth}
@@ -77,7 +77,7 @@ export const Navbar = ({ isCollapsed, onResetWidth }: NavbarProps) => {
           </div>
         )}
         <div className="flex w-full items-center justify-between">
-          <span className="truncate text-lg font-medium text-primary">
+          <span className="truncate text-lg font-medium text-muted-foreground">
             {title}
           </span>
           <DropdownMenu>

@@ -30,7 +30,20 @@ const DocumentsPage = () => {
 
   return (
     <div className="flex h-screen shrink-0 flex-col items-center justify-center truncate text-center">
-      <Image src="/logo.svg" width="100" height="100" alt="Logo" />
+      <Image
+        className="dark:hidden"
+        src="/logo.svg"
+        width="100"
+        height="100"
+        alt="Logo"
+      />
+      <Image
+        className="hidden dark:block"
+        src="/logo-dark.svg"
+        width="100"
+        height="100"
+        alt="Logo"
+      />
 
       <h1 className="text-2xl font-bold">Welcome to Voton!</h1>
 

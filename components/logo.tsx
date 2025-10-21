@@ -29,7 +29,20 @@ export const Logo = ({ size, className }: LogoProps) => {
 
   return (
     <div className={cn("flex items-center justify-center", className)}>
-      <Image src="/logo.svg" width={imageSize} height={imageSize} alt="Logo" />
+      <Image
+        className="dark:hidden"
+        src="/logo.svg"
+        width={imageSize}
+        height={imageSize}
+        alt="Logo"
+      />
+      <Image
+        className="hidden dark:block"
+        src="/logo-dark.svg"
+        width={imageSize}
+        height={imageSize}
+        alt="Logo"
+      />
       <p className={cn(textVariants({ size: sizeKey }))}>Voton</p>
     </div>
   );

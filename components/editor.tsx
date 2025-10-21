@@ -1,5 +1,6 @@
 "use client";
 
+import { useTheme } from "next-themes";
 import {
   BlockNoteSchema,
   defaultBlockSpecs,
@@ -17,6 +18,8 @@ interface EditorProps {
 }
 
 export default function Editor({ onChange, initialData }: EditorProps) {
+  const { resolvedTheme } = useTheme();
+
   // Handles file uploads to the editor.
   const handleUpload = async (file: File) => {
     return new Promise<string>((resolve, reject) => {
@@ -61,7 +64,7 @@ export default function Editor({ onChange, initialData }: EditorProps) {
       <BlockNoteView
         editor={editor}
         onChange={onEditorChange}
-        theme="light"
+        theme={resolvedTheme === "light" ? "light" : "dark"}
         className="max-md:px-0 px-2.5"
       />
     </div>

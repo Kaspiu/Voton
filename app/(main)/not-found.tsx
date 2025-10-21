@@ -8,7 +8,20 @@ import { Button } from "@/components/ui/button";
 const NotFound = () => {
   return (
     <div className="flex h-screen w-full shrink-0 flex-col items-center justify-center truncate text-center">
-      <Image src="/error.png" width="300" height="150" alt="Logo" />
+      <Image
+        className="dark:hidden"
+        src="/error.png"
+        width="300"
+        height="150"
+        alt="Logo"
+      />
+      <Image
+        className="hidden dark:block"
+        src="/error-dark.png"
+        width="300"
+        height="150"
+        alt="Logo"
+      />
       <h1 className="text-2xl font-bold">Ooops!</h1>
       <h3 className="text-lg font-medium">
         Looks like you&apos;re in the wrong place.
