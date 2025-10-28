@@ -19,12 +19,14 @@ import {
 } from "@/lib/database/export-import";
 import { ModeToggle } from "../mode-toggle";
 import { Separator } from "../ui/separator";
+import { ClearModal } from "./clear-modal";
 
 interface SettingsItemProps {
   itemTitle: string;
   itemDescription: string;
-  itemBtnText: string;
   itemFunc: () => void;
+  itemBtnText?: string;
+  isClear?: boolean;
 }
 
 const SettingsItem = ({
@@ -32,6 +34,7 @@ const SettingsItem = ({
   itemDescription,
   itemBtnText,
   itemFunc,
+  isClear,
 }: SettingsItemProps) => {
   return (
     <div className="flex items-center justify-between">
@@ -39,14 +42,18 @@ const SettingsItem = ({
         <Label>{itemTitle}</Label>
         <span className="text-muted-foreground text-xs">{itemDescription}</span>
       </div>
-      <Button
-        onClick={itemFunc}
-        variant="outline"
-        size="sm"
-        className="cursor-pointer text-muted-foreground text-xs"
-      >
-        {itemBtnText}
-      </Button>
+      {isClear ? (
+        <ClearModal onClear={itemFunc} />
+      ) : (
+        <Button
+          onClick={itemFunc}
+          variant="outline"
+          size="sm"
+          className="cursor-pointer text-muted-foreground text-xs"
+        >
+          {itemBtnText}
+        </Button>
+      )}
     </div>
   );
 };
@@ -115,10 +122,11 @@ export const SettingsModal = () => {
           <SettingsItem
             itemTitle="Clear data"
             itemDescription="Remove all data permanently"
-            itemBtnText="Clear"
             itemFunc={onClearData}
+            isClear
           />
         </div>
+
         <Separator />
         <p className="text-lg font-semibold leading-none">Appearance</p>
         <div className="flex items-center justify-between">
