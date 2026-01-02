@@ -87,7 +87,7 @@ export const ImageDropzone: React.FC<ImageDropzoneProps> = ({
       <div
         {...getRootProps()}
         className={cn(
-          "border-2 border-dashed cursor-pointer overflow-hidden p-6 rounded-lg text-center transition-all",
+          "border-2 border-dashed cursor-pointer overflow-hidden p-6 rounded-md text-center transition-all",
           isDragActive &&
             !isDragReject &&
             "border-muted-foreground bg-secondary",

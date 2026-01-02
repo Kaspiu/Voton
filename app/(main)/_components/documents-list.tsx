@@ -2,17 +2,24 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { File } from "lucide-react";
+import { File, Folder as FolderIcon } from "lucide-react";
 
 import { SidebarItem } from "@/components/sidebar-item";
-import { getChildPages, getRootPages } from "@/lib/database/pages"; // I've noticed a potential error here. See the error list below.
-import { Page } from "@/lib/database/types";
+import {
+  getChildFolders,
+  getChildPages,
+  getRootFolders,
+  getRootPages,
+} from "@/lib/database/pages";
+import { Folder, Page } from "@/lib/database/types";
 import { cn } from "@/lib/utils";
 
 interface DocumentsListProps {
   parentDocumentId?: string;
   expandLevel?: number;
 }
+
+type DocumentItem = (Page & { type: "page" }) | (Folder & { type: "folder" });
 
 export const DocumentsList = ({
   parentDocumentId,
@@ -22,26 +29,37 @@ export const DocumentsList = ({
   const router = useRouter();
 
   const [isExpanded, setIsExpanded] = useState<Record<string, boolean>>({});
-  const [pages, setPages] = useState<Page[]>([]);
+  const [documents, setDocuments] = useState<DocumentItem[]>([]);
 
-  // Toggles the expanded state for a given document ID.
+  // Toggle expansion state for a document
   const onExpand = (id: string) => {
     setIsExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
-  // Navigates to the page for the given document ID.
+  // Navigate to the document page
   const onRedirect = (id: string) => {
     router.push(`/documents/${id}`);
   };
 
-  // Fetches and updates the list of pages based on parent ID and events.
+  // Fetch documents and set up event listeners for updates
   useEffect(() => {
     const fetchPages = async () => {
       try {
-        const pagesToFetch = parentDocumentId
-          ? getChildPages(parentDocumentId)
-          : getRootPages();
-        setPages(await pagesToFetch);
+        let fetchedPages: Page[] = [];
+        let fetchedFolders: Folder[] = [];
+
+        if (parentDocumentId) {
+          fetchedPages = await getChildPages(parentDocumentId);
+          fetchedFolders = await getChildFolders(parentDocumentId);
+        } else {
+          fetchedPages = await getRootPages();
+          fetchedFolders = await getRootFolders();
+        }
+
+        setDocuments([
+          ...fetchedFolders.map((f) => ({ ...f, type: "folder" as const })),
+          ...fetchedPages.map((p) => ({ ...p, type: "page" as const })),
+        ]);
       } catch (error) {
         console.error("Failed to fetch pages:", error);
       }
@@ -49,11 +67,12 @@ export const DocumentsList = ({
 
     fetchPages();
 
-    window.addEventListener("page-changed", fetchPages);
-    window.addEventListener("page-deleted", fetchPages);
+    window.addEventListener("item-changed", fetchPages);
+    window.addEventListener("item-deleted", fetchPages);
+
     return () => {
-      window.removeEventListener("page-changed", fetchPages);
-      window.removeEventListener("page-deleted", fetchPages);
+      window.removeEventListener("item-changed", fetchPages);
+      window.removeEventListener("item-deleted", fetchPages);
     };
   }, [parentDocumentId]);
 
@@ -72,23 +91,29 @@ export const DocumentsList = ({
         No pages inside
       </p>
 
-      {pages.map((page) => (
-        <div key={page.id}>
+      {documents.map((doc) => (
+        <div key={doc.id}>
           <SidebarItem
-            id={page.id}
-            label={page.title}
-            icon={File}
-            documentIcon={page.icon}
-            isActive={params.documentId === page.id}
-            isExpanded={isExpanded[page.id]}
+            id={doc.id}
+            label={doc.title}
+            icon={doc.type === "folder" ? FolderIcon : File}
+            documentIcon={doc.type === "page" ? doc.icon : undefined}
+            color={doc.type === "folder" ? doc.color : undefined}
+            isActive={params.documentId === doc.id}
+            isExpanded={isExpanded[doc.id]}
             expandLevel={expandLevel}
-            onClick={() => onRedirect(page.id)}
-            onExpand={() => onExpand(page.id)}
+            onClick={
+              doc.type === "page"
+                ? () => onRedirect(doc.id)
+                : () => onExpand(doc.id)
+            }
+            onExpand={() => onExpand(doc.id)}
+            type={doc.type}
           />
 
-          {isExpanded[page.id] && (
+          {isExpanded[doc.id] && (
             <DocumentsList
-              parentDocumentId={page.id}
+              parentDocumentId={doc.id}
               expandLevel={expandLevel + 1}
             />
           )}

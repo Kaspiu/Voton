@@ -109,7 +109,7 @@ export const Toolbar = ({ initialData }: ToolbarProps) => {
             onClick={onEmojiDelete}
             variant="outline"
             size="icon"
-            className="cursor-pointer rounded-xl text-xs text-muted-foreground opacity-0 transition-all group-hover/icon:opacity-100 max-md:opacity-100"
+            className="cursor-pointer rounded-lg text-xs text-muted-foreground opacity-0 transition-all group-hover/icon:opacity-100 max-md:opacity-100"
           >
             <X className="h-4 w-4" />
           </Button>

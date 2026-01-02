@@ -1,26 +1,34 @@
 import { getDB } from "./database";
-import { getAllPages, notifyDelete } from "./pages";
-import { Page } from "./types";
+import {
+  getAllFolders,
+  getAllPages,
+  notifyChanges,
+  notifyDelete,
+} from "./pages";
+import { Folder, Page } from "./types";
 
 export interface VotonExportData {
   version: string;
   exportDate: string;
   pages: Page[];
+  folders: Folder[];
 }
 
-// Exports all user data to a downloadable JSON file.
+// Exports all user data to a JSON file
 export async function exportData(): Promise<void> {
   const link = document.createElement("a");
   let url: string | null = null;
 
   try {
     const pages = await getAllPages();
+    const folders = await getAllFolders();
     const exportTimestamp = new Date().toISOString();
     const exportDate = exportTimestamp.split("T")[0];
     const data: VotonExportData = {
-      version: "1.0.1",
+      version: "2.0.1",
       exportDate: exportTimestamp,
       pages,
+      folders,
     };
     const jsonString = JSON.stringify(data, null, 2);
     const blob = new Blob([jsonString], { type: "application/json" });
@@ -43,7 +51,7 @@ export async function exportData(): Promise<void> {
   }
 }
 
-// Imports user data from a JSON file.
+// Imports user data from a JSON file
 export async function importData(): Promise<void> {
   return new Promise((resolve, reject) => {
     const input = document.createElement("input");
@@ -102,12 +110,17 @@ export async function importData(): Promise<void> {
             }
 
             const db = await getDB();
-            const tx = db.transaction("pages", "readwrite");
+            const tx = db.transaction(["pages", "folders"], "readwrite");
+            const pagesStore = tx.objectStore("pages");
+            const foldersStore = tx.objectStore("folders");
 
-            await Promise.all(data.pages.map((page) => tx.store.add(page)));
+            await Promise.all([
+              ...data.pages.map((page) => pagesStore.put(page)),
+              ...data.folders.map((folder) => foldersStore.put(folder)),
+            ]);
             await tx.done;
 
-            notifyDelete();
+            notifyChanges();
             resolve();
           } catch (error) {
             reject(error);
@@ -130,31 +143,31 @@ export async function importData(): Promise<void> {
   });
 }
 
-// Clears all data from the 'pages' object store in the database.
+// Clears all data from the database
 export async function clearAllData(): Promise<void> {
   const db = await getDB();
-  const pagesTx = db.transaction("pages", "readwrite");
-
-  await pagesTx.store.clear();
-  await pagesTx.done;
+  await db.clear("pages");
+  await db.clear("folders");
 
   notifyDelete();
 }
 
-// Validates the structure and types of the imported data object.
+// Validates the imported data structure
 export function validateExportData(data: unknown): data is VotonExportData {
   if (
     !data ||
     typeof data !== "object" ||
     typeof (data as VotonExportData).version !== "string" ||
     typeof (data as VotonExportData).exportDate !== "string" ||
-    !Array.isArray((data as VotonExportData).pages)
+    !Array.isArray((data as VotonExportData).pages) ||
+    !Array.isArray((data as VotonExportData).folders)
   ) {
     return false;
   }
 
+  // Validate pages
   const pages = (data as VotonExportData).pages;
-  return pages.every((page) => {
+  const pagesValid = pages.every((page) => {
     if (
       !page ||
       typeof page !== "object" ||
@@ -166,13 +179,38 @@ export function validateExportData(data: unknown): data is VotonExportData {
     }
 
     const optionalStringProps: (keyof Page)[] = [
-      "parentDocument",
+      "parentFolder",
       "content",
       "coverImage",
       "icon",
     ];
-    return optionalStringProps.every(
+    const stringsValid = optionalStringProps.every(
       (prop) => !(prop in page) || typeof page[prop] === "string"
+    );
+
+    if (!stringsValid) return false;
+
+    return !("updatedAt" in page) || typeof page.updatedAt === "number";
+  });
+
+  if (!pagesValid) return false;
+
+  // Validate folders
+  const folders = (data as VotonExportData).folders;
+  return folders.every((folder) => {
+    if (
+      !folder ||
+      typeof folder !== "object" ||
+      typeof folder.id !== "string" ||
+      typeof folder.title !== "string" ||
+      Array.isArray(folder)
+    ) {
+      return false;
+    }
+
+    const optionalStringProps: (keyof Folder)[] = ["parentFolder", "color"];
+    return optionalStringProps.every(
+      (prop) => !(prop in folder) || typeof folder[prop] === "string"
     );
   });
 }

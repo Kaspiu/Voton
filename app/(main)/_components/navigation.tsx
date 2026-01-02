@@ -4,16 +4,33 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useParams, usePathname, useRouter } from "next/navigation";
-import { ChevronsLeft, CirclePlus, Menu, Search, Settings } from "lucide-react";
+
+import {
+  ChevronRight,
+  ChevronsLeft,
+  CirclePlus,
+  File,
+  Folder,
+  Menu,
+  Search,
+  Settings,
+} from "lucide-react";
 import { toast } from "sonner";
 import { useMediaQuery } from "usehooks-ts";
 
 import { useSearch } from "@/hooks/use-search";
 import { useSettings } from "@/hooks/use-settings";
-import { addPage } from "@/lib/database/pages";
+import { addFolder, addPage } from "@/lib/database/pages";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/logo";
 import { SidebarItem } from "@/components/sidebar-item";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
 import { DocumentsList } from "./documents-list";
 import { Navbar } from "./navbar";
 
@@ -32,7 +49,7 @@ const Navigation = () => {
   const [isCollapsed, setIsCollapsed] = useState(isMobile);
   const [isResetting, setIsResetting] = useState(false);
 
-  // Collapses the sidebar to a zero-width state.
+  // Collapses sidebar to zero width
   const collapseSidebar = () => {
     if (sidebarRef.current && navbarRef.current) {
       setIsCollapsed(true);
@@ -55,6 +72,10 @@ const Navigation = () => {
       sidebarRef.current.style.width = isMobile ? "100%" : "240px";
       navbarRef.current.style.left = isMobile ? "100%" : "240px";
       navbarRef.current.style.width = isMobile ? "0" : "calc(100% - 240px)";
+
+      if (!isMobile) {
+        localStorage.setItem("sidebar-width", "240");
+      }
 
       setTimeout(() => setIsResetting(false), 300);
     }
@@ -80,6 +101,13 @@ const Navigation = () => {
     isResizing.current = false;
     document.removeEventListener("mousemove", handleMouseMove);
     document.removeEventListener("mouseup", handleMouseUp);
+
+    if (sidebarRef.current && sidebarRef.current.style.width) {
+      localStorage.setItem(
+        "sidebar-width",
+        sidebarRef.current.style.width.replace("px", "")
+      );
+    }
   };
 
   // Handles the mouse down event to start resizing the sidebar.
@@ -93,7 +121,7 @@ const Navigation = () => {
   };
 
   // Creates a new page and navigates to it.
-  const onCreate = () => {
+  const onCreatePage = () => {
     const promise = addPage({ title: "Untitled" }).then((page) => {
       if (page) {
         router.push(`/documents/${page.id}`);
@@ -107,16 +135,35 @@ const Navigation = () => {
     });
   };
 
-  // Collapses or resets the sidebar based on the mobile breakpoint.
+  // Creates new folder
+  const onCreateFolder = () => {
+    const promise = addFolder({ title: "New folder" });
+
+    toast.promise(promise, {
+      loading: "Creating a new folder...",
+      success: "New folder created!",
+      error: "Failed to create a new folder.",
+    });
+  };
+
+  // Handles mobile responsiveness
   useEffect(() => {
     if (isMobile) {
       collapseSidebar();
     } else {
-      resetSidebarWidth();
+      const savedWidth = localStorage.getItem("sidebar-width");
+      if (savedWidth && sidebarRef.current && navbarRef.current) {
+        setIsCollapsed(false);
+        sidebarRef.current.style.width = `${savedWidth}px`;
+        navbarRef.current.style.left = `${savedWidth}px`;
+        navbarRef.current.style.width = `calc(100% - ${savedWidth}px)`;
+      } else {
+        resetSidebarWidth();
+      }
     }
   }, [isMobile]);
 
-  // Collapses the sidebar on mobile when the route changes.
+  // Collapses mobile sidebar on route change
   useEffect(() => {
     if (isMobile) {
       collapseSidebar();
@@ -158,20 +205,39 @@ const Navigation = () => {
             icon={Settings}
             label="Settings"
           />
-          <SidebarItem onClick={onCreate} icon={CirclePlus} label="Add Page" />
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <div
+                role="button"
+                className="flex cursor-pointer items-center rounded-e-sm p-1 text-sm font-medium transition-all hover:bg-muted-foreground/10 data-[state=open]:bg-muted-foreground/10"
+              >
+                <CirclePlus className="mr-2 ml-4.5 h-4 w-4 shrink-0" />
+                New
+                <ChevronRight className="h-4 w-4 shrink-0 ml-auto mr-2" />
+              </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" side="right">
+              <DropdownMenuItem onClick={onCreatePage}>
+                <File className="h-4 w-4 shrink-0" /> Page
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={onCreateFolder}>
+                <Folder className="h-4 w-4 shrink-0" /> Folder
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         <p className="pl-5.5 pr-1 text-xs font-bold text-muted-foreground/50">
           WORKSPACE
         </p>
 
-        <div className="py-2 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-secondary [&::-webkit-scrollbar-thumb]:bg-muted-foreground/15 [&::-webkit-scrollbar-thumb]:rounded-md truncate">
+        <div className="py-2 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-secondary [&::-webkit-scrollbar-thumb]:bg-muted-foreground/15 [&::-webkit-scrollbar-thumb]:rounded-sm truncate">
           <DocumentsList />
         </div>
 
         <div
-          onClick={resetSidebarWidth}
-          onMouseDown={handleSidebarResize}
+          onClick={!isMobile ? resetSidebarWidth : undefined}
+          onMouseDown={!isMobile ? handleSidebarResize : undefined}
           className="absolute top-0 right-0 h-full w-[3px] cursor-ew-resize bg-muted-foreground/10 opacity-0 transition-all hover:opacity-100"
         />
       </aside>

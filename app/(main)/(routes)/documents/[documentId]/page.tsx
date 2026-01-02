@@ -34,8 +34,9 @@ const DocumentIdPage = () => {
 
     fetchPage();
 
-    window.addEventListener("page-changed", fetchPage);
-    return () => window.removeEventListener("page-changed", fetchPage);
+    window.addEventListener("item-changed", fetchPage);
+
+    return () => window.removeEventListener("item-changed", fetchPage);
   }, [params.documentId]);
 
   // Updates the page content in the database.

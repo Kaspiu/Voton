@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Ellipsis, Menu, Trash, X } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
+import { Clock, Ellipsis, Menu, Trash, X } from "lucide-react";
 import { toast } from "sonner";
 
 import { DeleteModal } from "@/components/modals/delete-modal";
@@ -10,20 +10,45 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { deletePageWithChildren, getPage } from "@/lib/database/pages";
+import { deletePage, getPage } from "@/lib/database/pages";
 
 interface NavbarProps {
   isCollapsed: boolean;
   onResetWidth: () => void;
 }
 
+// Formats timestamp into relative time string
+const formatTimeAgo = (timestamp: number) => {
+  const now = Date.now();
+  const diff = now - timestamp;
+  const minutes = Math.floor(diff / 60000);
+
+  if (minutes <= 1) return "Edited just now";
+  if (minutes < 60) return `Edited ${minutes}m ago`;
+
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `Edited ${hours}h ago`;
+
+  const days = Math.floor(hours / 24);
+  if (days < 30) return `Edited ${days}d ago`;
+
+  const months = Math.floor(days / 30);
+  if (days < 365) return `Edited ${months}mo ago`;
+
+  const years = Math.floor(days / 365);
+  return `Edited ${years}y ago`;
+};
+
 export const Navbar = ({ isCollapsed, onResetWidth }: NavbarProps) => {
   const router = useRouter();
   const params = useParams();
 
   const [title, setTitle] = useState("");
+  const [updatedAt, setUpdatedAt] = useState<number>();
+  const [formattedTime, setFormattedTime] = useState("");
 
   // Navigates back to the main documents page.
   const onClose = () => {
@@ -36,7 +61,7 @@ export const Navbar = ({ isCollapsed, onResetWidth }: NavbarProps) => {
       return;
     }
 
-    const promise = deletePageWithChildren(params.documentId as string);
+    const promise = deletePage(params.documentId as string);
 
     toast.promise(promise, {
       loading: "Deleting page...",
@@ -44,10 +69,10 @@ export const Navbar = ({ isCollapsed, onResetWidth }: NavbarProps) => {
       error: "Failed to delete page.",
     });
 
-    router.push(`/documents`);
+    promise.then(() => router.push(`/documents`));
   };
 
-  // Fetches the current page's title and listens for updates.
+  // Fetches page data and listens for changes
   useEffect(() => {
     const fetchPage = async () => {
       if (!params.documentId) return;
@@ -55,13 +80,16 @@ export const Navbar = ({ isCollapsed, onResetWidth }: NavbarProps) => {
       const page = await getPage(params.documentId as string);
       if (page) {
         setTitle(page.title);
+        setUpdatedAt(page.updatedAt);
+        setFormattedTime(page.updatedAt ? formatTimeAgo(page.updatedAt) : "");
       }
     };
 
     fetchPage();
 
-    window.addEventListener("page-changed", fetchPage);
-    return () => window.removeEventListener("page-changed", fetchPage);
+    window.addEventListener("item-changed", fetchPage);
+
+    return () => window.removeEventListener("item-changed", fetchPage);
   }, [params.documentId]);
 
   return (
@@ -80,32 +108,43 @@ export const Navbar = ({ isCollapsed, onResetWidth }: NavbarProps) => {
           <span className="truncate text-lg font-medium text-muted-foreground">
             {title}
           </span>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <div
-                role="button"
-                className="h-fit w-fit cursor-pointer rounded-md p-[3px] text-muted-foreground transition-all hover:bg-muted-foreground/10"
-              >
-                <Ellipsis className="h-6 w-6 shrink-0" />
+
+          <div className="flex items-center justify-center gap-4">
+            {updatedAt && (
+              <div className="flex items-center justify-center gap-2 text-sm font-medium text-muted-foreground">
+                <Clock className="h-4 w-4 shrink-0" />
+                <span>{formattedTime}</span>
               </div>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" side="left" forceMount>
-              <DropdownMenuItem onClick={onClose}>
-                <div className="flex items-center gap-2">
+            )}
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <div
+                  role="button"
+                  className="h-fit w-fit cursor-pointer rounded-md p-[3px] text-muted-foreground transition-all hover:bg-muted-foreground/10 data-[state=open]:bg-muted-foreground/10"
+                >
+                  <Ellipsis className="h-6 w-6 shrink-0" />
+                </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={onClose}>
                   <X className="h-4 w-4 shrink-0" />
                   Close
-                </div>
-              </DropdownMenuItem>
-              <DeleteModal onDelete={onDelete}>
-                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                  <div className="flex items-center gap-2">
-                    <Trash className="h-4 w-4 shrink-0" />
-                    Delete
-                  </div>
                 </DropdownMenuItem>
-              </DeleteModal>
-            </DropdownMenuContent>
-          </DropdownMenu>
+
+                <DropdownMenuSeparator />
+
+                <DropdownMenuItem variant="destructive">
+                  <DeleteModal onDelete={onDelete}>
+                    <div className="flex items-center gap-2">
+                      <Trash className="h-4 w-4 shrink-0 text-destructive" />
+                      Delete
+                    </div>
+                  </DeleteModal>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </nav>
     </>

@@ -1,31 +1,44 @@
 "use client";
 
-import { useParams, useRouter } from "next/navigation";
 import { useRef, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
 import {
-  ChevronDown,
   ChevronRight,
   Ellipsis,
+  FilePlus,
+  FolderPlus,
   LucideIcon,
+  Palette,
   Pen,
-  Plus,
   Trash,
 } from "lucide-react";
 import { toast } from "sonner";
 
+import { cn } from "@/lib/utils";
+import {
+  addFolder,
+  addPage,
+  deleteFolderWithChildren,
+  deletePage,
+  getFolder,
+  getPage,
+  updateFolder,
+  updatePage,
+} from "@/lib/database/pages";
 import { DeleteModal } from "@/components/modals/delete-modal";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuPortal,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  addPage,
-  deletePageWithChildren,
-  updatePage,
-} from "@/lib/database/pages";
-import { cn } from "@/lib/utils";
 
 interface SidebarItemProps {
   id?: string;
@@ -37,7 +50,9 @@ interface SidebarItemProps {
   onClick: () => void;
   icon: LucideIcon;
   label: string;
+  color?: string;
   isSearch?: boolean;
+  type?: "page" | "folder";
 }
 
 export const SidebarItem = ({
@@ -50,9 +65,10 @@ export const SidebarItem = ({
   onClick,
   icon: Icon,
   label,
+  color,
   isSearch,
+  type = "page",
 }: SidebarItemProps) => {
-  const ChevronIcon = isExpanded ? ChevronDown : ChevronRight;
   const router = useRouter();
   const params = useParams();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -74,38 +90,37 @@ export const SidebarItem = ({
     setIsEditing(false);
   };
 
-  // Handles the change event for the title input.
+  // Handle title input change
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(e.target.value);
     if (!id) return;
-    updatePage(id, {
-      title: e.target.value || "Untitled",
-    });
+
+    if (type === "folder") {
+      updateFolder(id, {
+        title: e.target.value || "Untitled",
+      });
+    } else {
+      updatePage(id, {
+        title: e.target.value || "Untitled",
+      });
+    }
   };
 
-  // Handles the "Enter" key press to confirm renaming.
+  // Confirm renaming on Enter key
   const onEnterKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       disableInput();
     }
   };
 
-  // Handles the expansion and collapse of the sidebar item.
-  const handleExpand = (e: React.MouseEvent<HTMLDivElement>) => {
-    e.stopPropagation();
-    if (onExpand) {
-      onExpand();
-    }
-  };
-
-  // Creates a new page as a child of the current document.
-  const onCreate = (e: React.MouseEvent<HTMLDivElement>) => {
+  // Create a new child page
+  const onCreatePage = (e: React.MouseEvent<HTMLDivElement>) => {
     e.stopPropagation();
     if (!id) return;
 
     const promise = addPage({
       title: "Untitled",
-      parentDocument: id,
+      parentFolder: id,
     }).then((page) => {
       if (!isExpanded) {
         onExpand?.();
@@ -122,21 +137,63 @@ export const SidebarItem = ({
     });
   };
 
-  // Deletes the current page and its children.
-  const onDelete = () => {
+  // Create a new child folder
+  const onCreateFolder = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation();
     if (!id) return;
 
-    const promise = deletePageWithChildren(id);
+    const promise = addFolder({
+      title: "New folder",
+      parentFolder: id,
+    }).then(() => {
+      if (!isExpanded) {
+        onExpand?.();
+      }
+    });
+
+    toast.promise(promise, {
+      loading: "Creating a new page...",
+      success: "New page created!",
+      error: "Failed to create a new page.",
+    });
+  };
+
+  // Delete the current item and its children
+  const onDelete = async () => {
+    if (!id) return;
+
+    let shouldRedirect = false;
 
     if (params.documentId === id) {
-      router.push(`/documents`);
+      shouldRedirect = true;
+    } else if (type === "folder" && params.documentId) {
+      const currentDocId = params.documentId as string;
+      const page = await getPage(currentDocId);
+      if (page) {
+        let parentId = page.parentFolder;
+        while (parentId) {
+          if (parentId === id) {
+            shouldRedirect = true;
+            break;
+          }
+          const parentFolder = await getFolder(parentId);
+          parentId = parentFolder?.parentFolder;
+        }
+      }
     }
+
+    const promise =
+      type === "folder" ? deleteFolderWithChildren(id) : deletePage(id);
 
     toast.promise(promise, {
       loading: "Deleting page...",
       success: "Page deleted!",
       error: "Failed to delete page.",
     });
+
+    if (shouldRedirect) {
+      promise.then(() => router.push(`/documents`));
+    }
   };
 
   return (
@@ -144,27 +201,52 @@ export const SidebarItem = ({
       onClick={onClick}
       role="button"
       className={cn(
-        "group flex cursor-pointer items-center rounded-e-md p-1 text-sm font-medium transition-all hover:bg-muted-foreground/10",
+        "group flex cursor-pointer items-center rounded-e-sm p-1 text-sm font-medium transition-all hover:bg-muted-foreground/10",
         isActive && "bg-muted-foreground/10 text-primary"
       )}
     >
-      {!!id && (
-        <div
-          onClick={handleExpand}
-          role="button"
+      {!!id && type === "folder" && (
+        <ChevronRight
           style={{
-            marginLeft: expandLevel ? `${expandLevel * 18 + 18}px` : "18px",
+            marginLeft: expandLevel ? `${expandLevel * 24 + 18}px` : "18px",
           }}
-          className="flex cursor-pointer items-center justify-center rounded-md p-0.5 transition-all hover:bg-muted-foreground/15"
-        >
-          <ChevronIcon className="h-4 w-4 shrink-0" />
-        </div>
+          className={cn(
+            "h-4 w-4 shrink-0 transition-all",
+            isExpanded && "rotate-90"
+          )}
+        />
       )}
 
       {documentIcon ? (
-        <div className="shrink-0 mx-2">{documentIcon}</div>
+        <div
+          style={{
+            marginLeft:
+              type === "page"
+                ? expandLevel
+                  ? `${expandLevel * 24 + 18}px`
+                  : "18px"
+                : undefined,
+          }}
+          className="shrink-0 mx-2"
+        >
+          {documentIcon}
+        </div>
       ) : (
-        <Icon className={cn("mr-2 ml-4.5 h-4 w-4 shrink-0", !!id && "ml-2")} />
+        <Icon
+          style={{
+            marginLeft:
+              type === "page"
+                ? expandLevel
+                  ? `${expandLevel * 24 + 18}px`
+                  : "18px"
+                : undefined,
+          }}
+          className={cn(
+            "mr-2 ml-4.5 h-4 w-4 shrink-0",
+            !!id && "ml-2",
+            type === "folder" && !!color && `text-${color}-500`
+          )}
+        />
       )}
 
       {!!id && isEditing ? (
@@ -187,12 +269,12 @@ export const SidebarItem = ({
       )}
 
       {!!id && (
-        <div className="ml-auto mr-2 flex items-center justify-center gap-2">
+        <div className="ml-auto mr-2 flex items-center justify-center gap-0.5">
           <DropdownMenu>
             <DropdownMenuTrigger onClick={(e) => e.stopPropagation()} asChild>
               <div
                 role="button"
-                className="max-md:opacity-100 flex cursor-pointer items-center justify-center rounded-md p-0.5 opacity-0 transition-all group-hover:opacity-100 hover:bg-muted-foreground/15"
+                className="max-md:opacity-100 flex cursor-pointer items-center justify-center rounded-sm p-0.5 opacity-0 transition-all group-hover:opacity-100 hover:bg-muted-foreground/15 data-[state=open]:bg-muted-foreground/15 data-[state=open]:opacity-100"
               >
                 <Ellipsis className="h-4 w-4 shrink-0" />
               </div>
@@ -200,32 +282,116 @@ export const SidebarItem = ({
             <DropdownMenuContent
               align="start"
               side="right"
-              forceMount
               onClick={(e) => e.stopPropagation()}
             >
-              <DropdownMenuItem>
-                <DeleteModal onDelete={onDelete}>
-                  <div className="flex items-center gap-2">
-                    <Trash className="h-4 w-4 shrink-0" />
-                    Delete
-                  </div>
-                </DeleteModal>
-              </DropdownMenuItem>
+              {type === "folder" && (
+                <DropdownMenuSub>
+                  <DropdownMenuSubTrigger>
+                    <Palette className="h-4 w-4 shrink-0" />
+                    Colors
+                  </DropdownMenuSubTrigger>
+                  <DropdownMenuPortal>
+                    <DropdownMenuSubContent>
+                      <DropdownMenuRadioGroup
+                        value={color || ""}
+                        onValueChange={(value) => {
+                          if (!id) return;
+                          updateFolder(id, { color: value });
+                        }}
+                      >
+                        <DropdownMenuRadioItem value="">
+                          Default
+                        </DropdownMenuRadioItem>
+                        <DropdownMenuRadioItem
+                          value="gray"
+                          className="text-gray-500"
+                        >
+                          Gray
+                        </DropdownMenuRadioItem>
+                        <DropdownMenuRadioItem
+                          value="red"
+                          className="text-red-500"
+                        >
+                          Red
+                        </DropdownMenuRadioItem>
+                        <DropdownMenuRadioItem
+                          value="orange"
+                          className="text-orange-500"
+                        >
+                          Orange
+                        </DropdownMenuRadioItem>
+                        <DropdownMenuRadioItem
+                          value="yellow"
+                          className="text-yellow-500"
+                        >
+                          Yellow
+                        </DropdownMenuRadioItem>
+                        <DropdownMenuRadioItem
+                          value="green"
+                          className="text-green-500"
+                        >
+                          Green
+                        </DropdownMenuRadioItem>
+                        <DropdownMenuRadioItem
+                          value="blue"
+                          className="text-blue-500"
+                        >
+                          Blue
+                        </DropdownMenuRadioItem>
+                        <DropdownMenuRadioItem
+                          value="purple"
+                          className="text-purple-500"
+                        >
+                          Purple
+                        </DropdownMenuRadioItem>
+                        <DropdownMenuRadioItem
+                          value="pink"
+                          className="text-pink-500"
+                        >
+                          Pink
+                        </DropdownMenuRadioItem>
+                      </DropdownMenuRadioGroup>
+                    </DropdownMenuSubContent>
+                  </DropdownMenuPortal>
+                </DropdownMenuSub>
+              )}
 
               <DropdownMenuItem onSelect={enableInput}>
                 <Pen className="h-4 w-4 shrink-0" />
                 Rename
               </DropdownMenuItem>
+
+              <DropdownMenuSeparator />
+
+              <DropdownMenuItem variant="destructive">
+                <DeleteModal onDelete={onDelete}>
+                  <div className="flex items-center gap-2">
+                    <Trash className="h-4 w-4 shrink-0 text-destructive" />
+                    Delete
+                  </div>
+                </DeleteModal>
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <div
-            onClick={onCreate}
-            role="button"
-            className="max-md:opacity-100 flex cursor-pointer items-center justify-center rounded-md p-0.5 opacity-0 transition-all group-hover:opacity-100 hover:bg-muted-foreground/15"
-          >
-            <Plus className="h-4 w-4 shrink-0" />
-          </div>
+          {type === "folder" && (
+            <>
+              <div
+                onClick={onCreatePage}
+                role="button"
+                className="max-md:opacity-100 flex cursor-pointer items-center justify-center rounded-sm p-0.5 opacity-0 transition-all group-hover:opacity-100 hover:bg-muted-foreground/15"
+              >
+                <FilePlus className="h-4 w-4 shrink-0" />
+              </div>
+              <div
+                onClick={onCreateFolder}
+                role="button"
+                className="max-md:opacity-100 flex cursor-pointer items-center justify-center rounded-sm p-0.5 opacity-0 transition-all group-hover:opacity-100 hover:bg-muted-foreground/15"
+              >
+                <FolderPlus className="h-4 w-4 shrink-0" />
+              </div>
+            </>
+          )}
         </div>
       )}
     </div>

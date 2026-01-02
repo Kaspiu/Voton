@@ -32,11 +32,13 @@ export const SearchCommand = () => {
     };
 
     fetchPages();
-    window.addEventListener("page-changed", fetchPages);
-    window.addEventListener("page-deleted", fetchPages);
+
+    window.addEventListener("item-changed", fetchPages);
+    window.addEventListener("item-deleted", fetchPages);
+
     return () => {
-      window.removeEventListener("page-changed", fetchPages);
-      window.removeEventListener("page-deleted", fetchPages);
+      window.removeEventListener("item-changed", fetchPages);
+      window.removeEventListener("item-deleted", fetchPages);
     };
   }, []);
 
