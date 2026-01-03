@@ -201,7 +201,7 @@ export const SidebarItem = ({
       onClick={onClick}
       role="button"
       className={cn(
-        "group flex cursor-pointer items-center rounded-e-sm p-1 text-sm font-medium transition-all hover:bg-muted-foreground/10",
+        "group flex cursor-pointer items-center rounded-sm py-1 mx-1 text-sm font-medium transition-all hover:bg-muted-foreground/10",
         isActive && "bg-muted-foreground/10 text-primary"
       )}
     >

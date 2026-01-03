@@ -28,12 +28,35 @@ export const DocumentsList = ({
   const params = useParams();
   const router = useRouter();
 
-  const [isExpanded, setIsExpanded] = useState<Record<string, boolean>>({});
   const [documents, setDocuments] = useState<DocumentItem[]>([]);
+  const [isExpanded, setIsExpanded] = useState<Record<string, boolean>>(() => {
+    try {
+      if (typeof window !== "undefined") {
+        return JSON.parse(
+          localStorage.getItem("sidebar-expanded-folders") || "{}"
+        );
+      }
+    } catch (error) {
+      console.error("Failed to load sidebar state:", error);
+    }
+    return {};
+  });
 
   // Toggle expansion state for a document
   const onExpand = (id: string) => {
     setIsExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
+    try {
+      const currentState = JSON.parse(
+        localStorage.getItem("sidebar-expanded-folders") || "{}"
+      );
+      currentState[id] = !currentState[id];
+      localStorage.setItem(
+        "sidebar-expanded-folders",
+        JSON.stringify(currentState)
+      );
+    } catch (error) {
+      console.error("Failed to save sidebar state:", error);
+    }
   };
 
   // Navigate to the document page

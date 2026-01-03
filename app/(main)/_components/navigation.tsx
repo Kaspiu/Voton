@@ -209,7 +209,7 @@ const Navigation = () => {
             <DropdownMenuTrigger asChild>
               <div
                 role="button"
-                className="flex cursor-pointer items-center rounded-e-sm p-1 text-sm font-medium transition-all hover:bg-muted-foreground/10 data-[state=open]:bg-muted-foreground/10"
+                className="flex cursor-pointer items-center rounded-sm py-1 mx-1 text-sm font-medium transition-all hover:bg-muted-foreground/10 data-[state=open]:bg-muted-foreground/10"
               >
                 <CirclePlus className="mr-2 ml-4.5 h-4 w-4 shrink-0" />
                 New
