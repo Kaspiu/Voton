@@ -259,7 +259,7 @@ export const SidebarItem = ({
           className="mr-2 w-full truncate bg-transparent focus:outline-none"
         />
       ) : (
-        <span className="truncate">{label}</span>
+        <span className="truncate mr-2">{label}</span>
       )}
 
       {isSearch && (

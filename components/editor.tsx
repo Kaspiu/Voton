@@ -65,7 +65,7 @@ export default function Editor({ onChange, initialData }: EditorProps) {
         editor={editor}
         onChange={onEditorChange}
         theme={resolvedTheme === "light" ? "light" : "dark"}
-        className="max-md:px-0 px-2.5"
+        className="max-lg:px-0 px-2.5"
       />
     </div>
   );

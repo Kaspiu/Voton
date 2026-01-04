@@ -13,6 +13,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { deletePage, getPage } from "@/lib/database/pages";
 
 interface NavbarProps {
@@ -104,17 +109,23 @@ export const Navbar = ({ isCollapsed, onResetWidth }: NavbarProps) => {
             <Menu className="h-6 w-6 shrink-0" />
           </div>
         )}
-        <div className="flex w-full items-center justify-between">
+        <div className="flex flex-1 items-center justify-between gap-4 min-w-0">
           <span className="truncate text-lg font-medium text-muted-foreground">
             {title}
           </span>
 
-          <div className="flex items-center justify-center gap-4">
+          <div className="flex items-center justify-center gap-2">
             {updatedAt && (
-              <div className="flex items-center justify-center gap-2 text-sm font-medium text-muted-foreground">
-                <Clock className="h-4 w-4 shrink-0" />
-                <span>{formattedTime}</span>
-              </div>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="h-fit w-fit rounded-md p-1 text-muted-foreground">
+                    <Clock className="h-4 w-4 shrink-0" />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">
+                  <span>{formattedTime}</span>
+                </TooltipContent>
+              </Tooltip>
             )}
 
             <DropdownMenu>

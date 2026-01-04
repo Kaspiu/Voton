@@ -66,7 +66,7 @@ export const Toolbar = ({ initialData }: ToolbarProps) => {
   };
 
   return (
-    <div className="group mb-12 mt-6 flex flex-col justify-center px-16 max-md:px-13.5">
+    <div className="group mb-12 mt-6 flex flex-col justify-center px-16 max-lg:px-13.5">
       <div
         className={cn(
           "mb-2 flex w-fit items-center gap-2 opacity-0 transition-all group-hover:opacity-100 max-md:opacity-100",

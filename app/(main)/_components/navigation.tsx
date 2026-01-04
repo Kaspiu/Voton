@@ -38,7 +38,7 @@ const Navigation = () => {
   const pathName = usePathname();
   const params = useParams();
   const router = useRouter();
-  const isMobile = useMediaQuery("(max-width: 768px)");
+  const isMobile = useMediaQuery("(max-width: 1024px)");
   const onSearchOpen = useSearch((state) => state.onOpen);
   const onSettingsOpen = useSettings((state) => state.onOpen);
 
@@ -69,12 +69,12 @@ const Navigation = () => {
       setIsCollapsed(false);
       setIsResetting(true);
 
-      sidebarRef.current.style.width = isMobile ? "100%" : "240px";
-      navbarRef.current.style.left = isMobile ? "100%" : "240px";
-      navbarRef.current.style.width = isMobile ? "0" : "calc(100% - 240px)";
+      sidebarRef.current.style.width = isMobile ? "100%" : "288px";
+      navbarRef.current.style.left = isMobile ? "100%" : "288px";
+      navbarRef.current.style.width = isMobile ? "0" : "calc(100% - 288px)";
 
       if (!isMobile) {
-        localStorage.setItem("sidebar-width", "240");
+        localStorage.setItem("sidebar-width", "288");
       }
 
       setTimeout(() => setIsResetting(false), 300);
@@ -86,8 +86,8 @@ const Navigation = () => {
     if (!isResizing.current) return;
 
     let newWidth = e.clientX;
-    if (newWidth < 240) newWidth = 240;
-    if (newWidth > 480) newWidth = 480;
+    if (newWidth < 288) newWidth = 288;
+    if (newWidth > 448) newWidth = 448;
 
     if (sidebarRef.current && navbarRef.current) {
       sidebarRef.current.style.width = `${newWidth}px`;
@@ -175,7 +175,7 @@ const Navigation = () => {
       <aside
         ref={sidebarRef}
         className={cn(
-          "sticky top-0 left-0 z-50 flex h-screen w-60 flex-col overflow-y-auto bg-secondary text-muted-foreground",
+          "sticky top-0 left-0 z-50 flex h-screen w-72 flex-col overflow-y-auto bg-secondary text-muted-foreground",
           isResetting && "transition-all duration-300 ease-in-out",
           isMobile && "w-0"
         )}
@@ -209,14 +209,22 @@ const Navigation = () => {
             <DropdownMenuTrigger asChild>
               <div
                 role="button"
-                className="flex cursor-pointer items-center rounded-sm py-1 mx-1 text-sm font-medium transition-all hover:bg-muted-foreground/10 data-[state=open]:bg-muted-foreground/10"
+                className="group flex cursor-pointer items-center rounded-sm py-1 mx-1 text-sm font-medium transition-all hover:bg-muted-foreground/10 data-[state=open]:bg-muted-foreground/10"
               >
                 <CirclePlus className="mr-2 ml-4.5 h-4 w-4 shrink-0" />
                 New
-                <ChevronRight className="h-4 w-4 shrink-0 ml-auto mr-2" />
+                <ChevronRight
+                  className={cn(
+                    "h-4 w-4 shrink-0 ml-auto mr-2 transition-all",
+                    isMobile && "group-data-[state=open]:rotate-90"
+                  )}
+                />
               </div>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" side="right">
+            <DropdownMenuContent
+              align={isMobile ? "end" : "start"}
+              side={isMobile ? "bottom" : "right"}
+            >
               <DropdownMenuItem onClick={onCreatePage}>
                 <File className="h-4 w-4 shrink-0" /> Page
               </DropdownMenuItem>
@@ -245,7 +253,7 @@ const Navigation = () => {
       <div
         ref={navbarRef}
         className={cn(
-          "fixed top-0 left-60 z-50 w-[calc(100%_-_240px)]",
+          "fixed top-0 left-60 z-50 w-[calc(100%_-_288px)]",
           isResetting && "transition-all duration-300 ease-in-out",
           isMobile && "left-0 w-full"
         )}
