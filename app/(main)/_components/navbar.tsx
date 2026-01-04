@@ -118,9 +118,9 @@ export const Navbar = ({ isCollapsed, onResetWidth }: NavbarProps) => {
             {updatedAt && (
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div className="h-fit w-fit rounded-md p-1 text-muted-foreground">
+                  <button className="h-fit w-fit rounded-md p-1 text-muted-foreground">
                     <Clock className="h-4 w-4 shrink-0" />
-                  </div>
+                  </button>
                 </TooltipTrigger>
                 <TooltipContent side="bottom">
                   <span>{formattedTime}</span>

@@ -69,7 +69,7 @@ export const Toolbar = ({ initialData }: ToolbarProps) => {
     <div className="group mb-12 mt-6 flex flex-col justify-center px-16 max-lg:px-13.5">
       <div
         className={cn(
-          "mb-2 flex w-fit items-center gap-2 opacity-0 transition-all group-hover:opacity-100 max-md:opacity-100",
+          "mb-2 flex w-fit items-center gap-2 opacity-0 transition-all group-hover:opacity-100 group-focus-within:opacity-100",
           !!initialData.icon && "mb-4"
         )}
       >
@@ -109,7 +109,7 @@ export const Toolbar = ({ initialData }: ToolbarProps) => {
             onClick={onEmojiDelete}
             variant="outline"
             size="icon"
-            className="cursor-pointer rounded-lg text-xs text-muted-foreground opacity-0 transition-all group-hover/icon:opacity-100 max-md:opacity-100"
+            className="cursor-pointer rounded-lg text-xs text-muted-foreground opacity-0 transition-all group-hover/icon:opacity-100 group-focus-within:opacity-100"
           >
             <X className="h-4 w-4" />
           </Button>

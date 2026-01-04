@@ -114,7 +114,7 @@ export const SidebarItem = ({
   };
 
   // Create a new child page
-  const onCreatePage = (e: React.MouseEvent<HTMLDivElement>) => {
+  const onCreatePage = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!id) return;
 
@@ -138,7 +138,7 @@ export const SidebarItem = ({
   };
 
   // Create a new child folder
-  const onCreateFolder = (e: React.MouseEvent<HTMLDivElement>) => {
+  const onCreateFolder = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!id) return;
 
@@ -272,12 +272,9 @@ export const SidebarItem = ({
         <div className="ml-auto mr-2 flex items-center justify-center gap-0.5">
           <DropdownMenu>
             <DropdownMenuTrigger onClick={(e) => e.stopPropagation()} asChild>
-              <div
-                role="button"
-                className="max-md:opacity-100 flex cursor-pointer items-center justify-center rounded-sm p-0.5 opacity-0 transition-all group-hover:opacity-100 hover:bg-muted-foreground/15 data-[state=open]:bg-muted-foreground/15 data-[state=open]:opacity-100"
-              >
+              <button className="flex cursor-pointer items-center justify-center rounded-sm p-0.5 opacity-0 transition-all group-hover:opacity-100 hover:bg-muted-foreground/15 data-[state=open]:bg-muted-foreground/15 data-[state=open]:opacity-100 group-focus-within:opacity-100">
                 <Ellipsis className="h-4 w-4 shrink-0" />
-              </div>
+              </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
               align="start"
@@ -376,20 +373,18 @@ export const SidebarItem = ({
 
           {type === "folder" && (
             <>
-              <div
+              <button
                 onClick={onCreatePage}
-                role="button"
-                className="max-md:opacity-100 flex cursor-pointer items-center justify-center rounded-sm p-0.5 opacity-0 transition-all group-hover:opacity-100 hover:bg-muted-foreground/15"
+                className="flex cursor-pointer items-center justify-center rounded-sm p-0.5 opacity-0 transition-all group-hover:opacity-100 hover:bg-muted-foreground/15 group-focus-within:opacity-100"
               >
                 <FilePlus className="h-4 w-4 shrink-0" />
-              </div>
-              <div
+              </button>
+              <button
                 onClick={onCreateFolder}
-                role="button"
-                className="max-md:opacity-100 flex cursor-pointer items-center justify-center rounded-sm p-0.5 opacity-0 transition-all group-hover:opacity-100 hover:bg-muted-foreground/15"
+                className="flex cursor-pointer items-center justify-center rounded-sm p-0.5 opacity-0 transition-all group-hover:opacity-100 hover:bg-muted-foreground/15 group-focus-within:opacity-100"
               >
                 <FolderPlus className="h-4 w-4 shrink-0" />
-              </div>
+              </button>
             </>
           )}
         </div>

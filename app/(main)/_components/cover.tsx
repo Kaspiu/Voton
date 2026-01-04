@@ -39,7 +39,7 @@ export const CoverImage = ({ initialData }: CoverImageProps) => {
         />
       )}
       {!!initialData.coverImage && (
-        <div className="absolute bottom-4 right-4 flex items-center gap-2 opacity-0 transition-all group-hover:opacity-100 max-md:opacity-100">
+        <div className="absolute bottom-4 right-4 flex items-center gap-2 opacity-0 transition-all group-hover:opacity-100 group-focus-within:opacity-100">
           <Button
             onClick={onChange}
             variant="outline"
