@@ -8,21 +8,21 @@ const cardData = [
       icon: Folders,
       title: "Hierarchical Organization",
       description:
-        "Create nested pages within pages to build your perfect knowledge structure. Organize your thoughts with unlimited nesting levels and intuitive sidebar navigation that works like your mind.",
+        "Create folders and pages with unlimited nesting depth. Organize your thoughts with intuitive sidebar navigation and build your perfect knowledge structure exactly how you want it.",
     },
     {
       icon: Palette,
       title: "Visual Personalization",
       description:
-        "Make every page uniquely yours with custom cover images and emoji icons. Upload images to set the perfect mood for each note and transform your workspace into an inspiring canvas.",
+        "Make every page uniquely yours with custom cover images and emoji icons. Upload images to set the perfect mood for each note, color-code your folders, and transform your workspace into an inspiring canvas.",
     },
   ],
   [
     {
       icon: LockKeyhole,
-      title: "True Offline-First",
+      title: "Privacy-First",
       description:
-        "Your data lives entirely in your browser - no servers, no accounts required. Work anywhere with complete privacy and lightning-fast performance thanks to local IndexedDB storage.",
+        "Your data lives entirely in your browser - no servers, no accounts required. Complete privacy with lightning-fast performance thanks to local IndexedDB storage.",
     },
     {
       icon: ArrowUpDown,
