@@ -29,13 +29,15 @@ const Navbar = () => {
   return (
     <div
       className={cn(
-        "fixed top-0 z-50 flex w-full items-center justify-between bg-background p-6 text-primary transition-all duration-300 cursor-default dark:bg-[#1F1F1F]",
+        "fixed top-0 z-50 flex w-full items-center justify-between bg-background p-6 text-primary transition-all duration-300 dark:bg-[#1F1F1F]",
         scrolled && "shadow-md rounded-b-md"
       )}
     >
       <GithubButton className="hidden max-sm:flex" />
 
-      <Logo className="max-sm:hidden" />
+      <Link href="/" className="max-sm:hidden select-none">
+        <Logo />
+      </Link>
 
       <div className="flex items-center justify-center gap-6">
         <Button asChild size="lg" className="cursor-pointer">

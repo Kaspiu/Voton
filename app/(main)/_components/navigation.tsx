@@ -181,7 +181,7 @@ const Navigation = () => {
         )}
       >
         <div className="flex items-center justify-between pt-4 pl-4 pr-3">
-          <Link href="/" className="shrink-0">
+          <Link href="/" className="shrink-0 select-none">
             <Logo size="sm" className="text-primary" />
           </Link>
           <div
