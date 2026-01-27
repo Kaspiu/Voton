@@ -4,7 +4,7 @@ import {
   getAllPages,
   notifyChanges,
   notifyDelete,
-} from "./pages";
+} from "./documents";
 import { Folder, Page } from "./types";
 
 export interface VotonExportData {
@@ -25,7 +25,7 @@ export async function exportData(): Promise<void> {
     const exportTimestamp = new Date().toISOString();
     const exportDate = exportTimestamp.split("T")[0];
     const data: VotonExportData = {
-      version: "2.0.1",
+      version: "2.0.3",
       exportDate: exportTimestamp,
       pages,
       folders,
@@ -185,7 +185,7 @@ export function validateExportData(data: unknown): data is VotonExportData {
       "icon",
     ];
     const stringsValid = optionalStringProps.every(
-      (prop) => !(prop in page) || typeof page[prop] === "string"
+      (prop) => !(prop in page) || typeof page[prop] === "string",
     );
 
     if (!stringsValid) return false;
@@ -210,7 +210,7 @@ export function validateExportData(data: unknown): data is VotonExportData {
 
     const optionalStringProps: (keyof Folder)[] = ["parentFolder", "color"];
     return optionalStringProps.every(
-      (prop) => !(prop in folder) || typeof folder[prop] === "string"
+      (prop) => !(prop in folder) || typeof folder[prop] === "string",
     );
   });
 }

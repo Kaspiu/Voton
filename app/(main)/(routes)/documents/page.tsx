@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import { addPage } from "@/lib/database/pages";
+import { addPage } from "@/lib/database/documents";
 
 const DocumentsPage = () => {
   const router = useRouter();

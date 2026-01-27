@@ -10,7 +10,7 @@ import {
   getChildPages,
   getRootFolders,
   getRootPages,
-} from "@/lib/database/pages";
+} from "@/lib/database/documents";
 import { Folder, Page } from "@/lib/database/types";
 import { cn } from "@/lib/utils";
 
@@ -33,7 +33,7 @@ export const DocumentsList = ({
     try {
       if (typeof window !== "undefined") {
         return JSON.parse(
-          localStorage.getItem("sidebar-expanded-folders") || "{}"
+          localStorage.getItem("sidebar-expanded-folders") || "{}",
         );
       }
     } catch (error) {
@@ -47,12 +47,12 @@ export const DocumentsList = ({
     setIsExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
     try {
       const currentState = JSON.parse(
-        localStorage.getItem("sidebar-expanded-folders") || "{}"
+        localStorage.getItem("sidebar-expanded-folders") || "{}",
       );
       currentState[id] = !currentState[id];
       localStorage.setItem(
         "sidebar-expanded-folders",
-        JSON.stringify(currentState)
+        JSON.stringify(currentState),
       );
     } catch (error) {
       console.error("Failed to save sidebar state:", error);
@@ -108,7 +108,7 @@ export const DocumentsList = ({
         className={cn(
           "hidden font-medium pr-1 text-muted-foreground/50 text-sm truncate",
           expandLevel === 0 && "hidden",
-          expandLevel > 0 && "last:block"
+          expandLevel > 0 && "last:block",
         )}
       >
         No pages inside

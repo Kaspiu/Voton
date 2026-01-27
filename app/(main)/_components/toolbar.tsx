@@ -6,7 +6,7 @@ import { ImagePlus, SmilePlus, X } from "lucide-react"; // External library
 import { Button } from "@/components/ui/button"; // Internal components
 import { EmojiPickerPopover } from "@/components/emoji-picker"; // Internal components
 import { useCoverImage } from "@/hooks/use-cover-image";
-import { updatePage } from "@/lib/database/pages";
+import { updatePage } from "@/lib/database/documents";
 import { Page } from "@/lib/database/types";
 import { cn } from "@/lib/utils";
 
@@ -70,7 +70,7 @@ export const Toolbar = ({ initialData }: ToolbarProps) => {
       <div
         className={cn(
           "mb-2 flex w-fit items-center gap-2 opacity-0 transition-all group-hover:opacity-100 group-focus-within:opacity-100",
-          !!initialData.icon && "mb-4"
+          !!initialData.icon && "mb-4",
         )}
       >
         {!initialData.icon && (

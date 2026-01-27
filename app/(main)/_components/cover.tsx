@@ -5,7 +5,7 @@ import { ImageUp, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { useCoverImage } from "@/hooks/use-cover-image";
-import { updatePage } from "@/lib/database/pages";
+import { updatePage } from "@/lib/database/documents";
 import { Page } from "@/lib/database/types";
 import { cn } from "@/lib/utils";
 
@@ -27,7 +27,7 @@ export const CoverImage = ({ initialData }: CoverImageProps) => {
     <div
       className={cn(
         "group relative h-[calc(30vh+62px)] w-full",
-        !initialData.coverImage && "h-[calc(15vh+62px)]"
+        !initialData.coverImage && "h-[calc(15vh+62px)]",
       )}
     >
       {!!initialData.coverImage && (

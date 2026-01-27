@@ -2,7 +2,7 @@ import { DBSchema, IDBPDatabase, openDB } from "idb";
 import { Folder, Page } from "./types";
 
 const DB_NAME = "VotonDB";
-const DB_VERSION = 2;
+const DB_VERSION = 3;
 
 interface VotonDBSchema extends DBSchema {
   pages: {
@@ -18,6 +18,7 @@ interface VotonDBSchema extends DBSchema {
     value: Folder;
     indexes: {
       parentFolder: string;
+      title: string;
     };
   };
 }
@@ -53,6 +54,9 @@ export async function initializeDB(): Promise<IDBPDatabase<VotonDBSchema>> {
         foldersStore.createIndex("parentFolder", "parentFolder", {
           unique: false,
         });
+      }
+      if (!foldersStore.indexNames.contains("title")) {
+        foldersStore.createIndex("title", "title", { unique: false });
       }
     },
   });

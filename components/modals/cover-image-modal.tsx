@@ -8,7 +8,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useCoverImage } from "@/hooks/use-cover-image";
-import { updatePage } from "@/lib/database/pages";
+import { updatePage } from "@/lib/database/documents";
 import { Page } from "@/lib/database/types";
 
 interface CoverImageModalProps {

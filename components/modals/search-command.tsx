@@ -13,7 +13,7 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { useSearch } from "@/hooks/use-search";
-import { getAllPages } from "@/lib/database/pages";
+import { getAllPages } from "@/lib/database/documents";
 import { Page } from "@/lib/database/types";
 
 export const SearchCommand = () => {

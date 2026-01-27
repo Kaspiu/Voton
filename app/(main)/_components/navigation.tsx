@@ -20,7 +20,7 @@ import { useMediaQuery } from "usehooks-ts";
 
 import { useSearch } from "@/hooks/use-search";
 import { useSettings } from "@/hooks/use-settings";
-import { addFolder, addPage } from "@/lib/database/pages";
+import { addFolder, addPage } from "@/lib/database/documents";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/logo";
 import { SidebarItem } from "@/components/sidebar-item";
@@ -105,7 +105,7 @@ const Navigation = () => {
     if (sidebarRef.current && sidebarRef.current.style.width) {
       localStorage.setItem(
         "sidebar-width",
-        sidebarRef.current.style.width.replace("px", "")
+        sidebarRef.current.style.width.replace("px", ""),
       );
     }
   };
@@ -177,7 +177,7 @@ const Navigation = () => {
         className={cn(
           "sticky top-0 left-0 z-50 flex h-screen w-72 flex-col overflow-y-auto bg-secondary text-muted-foreground",
           isResetting && "transition-all duration-300 ease-in-out",
-          isMobile && "w-0"
+          isMobile && "w-0",
         )}
       >
         <div className="flex items-center justify-between pt-4 pl-4 pr-3">
@@ -216,7 +216,7 @@ const Navigation = () => {
                 <ChevronRight
                   className={cn(
                     "h-4 w-4 shrink-0 ml-auto mr-2 transition-all",
-                    isMobile && "group-data-[state=open]:rotate-90"
+                    isMobile && "group-data-[state=open]:rotate-90",
                   )}
                 />
               </div>
@@ -255,7 +255,7 @@ const Navigation = () => {
         className={cn(
           "fixed top-0 left-60 z-50 w-[calc(100%_-_288px)]",
           isResetting && "transition-all duration-300 ease-in-out",
-          isMobile && "left-0 w-full"
+          isMobile && "left-0 w-full",
         )}
       >
         {!!params.documentId ? (

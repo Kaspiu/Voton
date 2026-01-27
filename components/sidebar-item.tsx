@@ -24,7 +24,7 @@ import {
   getPage,
   updateFolder,
   updatePage,
-} from "@/lib/database/pages";
+} from "@/lib/database/documents";
 import { DeleteModal } from "@/components/modals/delete-modal";
 import {
   DropdownMenu,
@@ -74,9 +74,11 @@ export const SidebarItem = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const [title, setTitle] = useState(label || "Untitled");
   const [isEditing, setIsEditing] = useState(false);
+  const shouldBlockRestoreRef = useRef(false);
 
   // Enables the input field for renaming the item.
   const enableInput = () => {
+    shouldBlockRestoreRef.current = true;
     setTitle(label);
     setIsEditing(true);
     setTimeout(() => {
@@ -88,6 +90,7 @@ export const SidebarItem = ({
   // Disables the input field.
   const disableInput = () => {
     setIsEditing(false);
+    shouldBlockRestoreRef.current = false;
   };
 
   // Handle title input change
@@ -202,7 +205,7 @@ export const SidebarItem = ({
       role="button"
       className={cn(
         "group flex cursor-pointer items-center rounded-sm py-1 mx-1 text-sm font-medium transition-all hover:bg-muted-foreground/10",
-        isActive && "bg-muted-foreground/10 text-primary"
+        isActive && "bg-muted-foreground/10 text-primary",
       )}
     >
       {!!id && type === "folder" && (
@@ -212,7 +215,7 @@ export const SidebarItem = ({
           }}
           className={cn(
             "h-4 w-4 shrink-0 transition-all",
-            isExpanded && "rotate-90"
+            isExpanded && "rotate-90",
           )}
         />
       )}
@@ -244,7 +247,7 @@ export const SidebarItem = ({
           className={cn(
             "mr-2 ml-4.5 h-4 w-4 shrink-0",
             !!id && "ml-2",
-            type === "folder" && !!color && `text-${color}-500`
+            type === "folder" && !!color && `text-${color}-500`,
           )}
         />
       )}
@@ -280,6 +283,11 @@ export const SidebarItem = ({
               align="start"
               side="right"
               onClick={(e) => e.stopPropagation()}
+              onCloseAutoFocus={(e) => {
+                if (shouldBlockRestoreRef.current) {
+                  e.preventDefault();
+                }
+              }}
             >
               {type === "folder" && (
                 <DropdownMenuSub>

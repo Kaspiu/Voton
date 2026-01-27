@@ -39,7 +39,8 @@ export const DeleteModal = ({ children, onDelete }: DeleteModalProps) => {
           </AlertDialogCancel>
           <AlertDialogAction
             onClick={onDelete}
-            className="cursor-pointer text-destructive bg-destructive/10 dark:bg-destructive/20 hover:bg-destructive/20 dark:hover:bg-destructive/30"
+            variant="destructive"
+            className="cursor-pointer"
           >
             Delete
           </AlertDialogAction>

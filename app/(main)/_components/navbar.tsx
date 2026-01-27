@@ -13,7 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { deletePage, getPage } from "@/lib/database/pages";
+import { deletePage, getPage } from "@/lib/database/documents";
 
 interface NavbarProps {
   isCollapsed: boolean;

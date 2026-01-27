@@ -8,13 +8,13 @@ import { CoverImage } from "@/app/(main)/_components/cover";
 import { Toolbar } from "@/app/(main)/_components/toolbar";
 import { CoverImageModal } from "@/components/modals/cover-image-modal";
 import { Spinner } from "@/components/spinner";
-import { getPage, updatePage } from "@/lib/database/pages";
+import { getPage, updatePage } from "@/lib/database/documents";
 import { Page } from "@/lib/database/types";
 
 const DocumentIdPage = () => {
   const Editor = useMemo(
     () => dynamic(() => import("@/components/editor"), { ssr: false }),
-    []
+    [],
   );
 
   const [isLoading, setIsLoading] = useState(true);
