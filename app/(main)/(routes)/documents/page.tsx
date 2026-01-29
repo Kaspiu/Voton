@@ -51,7 +51,7 @@ const DocumentsPage = () => {
 
       <Button onClick={onCreate} className="cursor-pointer mt-4" size="lg">
         <CirclePlus />
-        Create a Note
+        Create a page
       </Button>
     </div>
   );

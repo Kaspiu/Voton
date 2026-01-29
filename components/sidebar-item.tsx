@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import {
   ChevronRight,
+  CornerUpRight,
   Ellipsis,
   FilePlus,
   FolderPlus,
@@ -14,6 +15,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
+import { useMoveTo } from "@/hooks/use-move-to";
 import { cn } from "@/lib/utils";
 import {
   addFolder,
@@ -42,6 +44,7 @@ import {
 
 interface SidebarItemProps {
   id?: string;
+  parentId?: string;
   documentIcon?: string;
   isActive?: boolean;
   onExpand?: () => void;
@@ -57,6 +60,7 @@ interface SidebarItemProps {
 
 export const SidebarItem = ({
   id,
+  parentId,
   documentIcon,
   isActive,
   onExpand,
@@ -74,6 +78,7 @@ export const SidebarItem = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const [title, setTitle] = useState(label || "Untitled");
   const [isEditing, setIsEditing] = useState(false);
+  const onMoveToOpen = useMoveTo((state) => state.onOpen);
   const shouldBlockRestoreRef = useRef(false);
 
   // Enables the input field for renaming the item.
@@ -366,16 +371,29 @@ export const SidebarItem = ({
                 Rename
               </DropdownMenuItem>
 
+              <DropdownMenuItem
+                onSelect={() => {
+                  if (!id) return;
+                  onMoveToOpen({ id, type, parentId });
+                }}
+              >
+                <CornerUpRight className="h-4 w-4 shrink-0" />
+                Move to
+              </DropdownMenuItem>
+
               <DropdownMenuSeparator />
 
-              <DropdownMenuItem variant="destructive">
-                <DeleteModal onDelete={onDelete}>
+              <DeleteModal onDelete={onDelete}>
+                <DropdownMenuItem
+                  onSelect={(e) => e.preventDefault()}
+                  variant="destructive"
+                >
                   <div className="flex items-center gap-2">
                     <Trash className="h-4 w-4 shrink-0 text-destructive" />
                     Delete
                   </div>
-                </DeleteModal>
-              </DropdownMenuItem>
+                </DropdownMenuItem>
+              </DeleteModal>
             </DropdownMenuContent>
           </DropdownMenu>
 

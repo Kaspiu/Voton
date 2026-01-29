@@ -146,14 +146,17 @@ export const Navbar = ({ isCollapsed, onResetWidth }: NavbarProps) => {
 
                 <DropdownMenuSeparator />
 
-                <DropdownMenuItem variant="destructive">
-                  <DeleteModal onDelete={onDelete}>
+                <DeleteModal onDelete={onDelete}>
+                  <DropdownMenuItem
+                    onSelect={(e) => e.preventDefault()}
+                    variant="destructive"
+                  >
                     <div className="flex items-center gap-2">
                       <Trash className="h-4 w-4 shrink-0 text-destructive" />
                       Delete
                     </div>
-                  </DeleteModal>
-                </DropdownMenuItem>
+                  </DropdownMenuItem>
+                </DeleteModal>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

@@ -111,13 +111,14 @@ export const DocumentsList = ({
           expandLevel > 0 && "last:block",
         )}
       >
-        No pages inside
+        No documents inside
       </p>
 
       {documents.map((doc) => (
         <div key={doc.id}>
           <SidebarItem
             id={doc.id}
+            parentId={doc.parentFolder}
             label={doc.title}
             icon={doc.type === "folder" ? FolderIcon : File}
             documentIcon={doc.type === "page" ? doc.icon : undefined}

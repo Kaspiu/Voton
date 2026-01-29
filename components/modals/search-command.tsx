@@ -64,7 +64,7 @@ export const SearchCommand = () => {
     <CommandDialog open={isOpen} onOpenChange={onClose}>
       <CommandInput placeholder="Search your workspace..." />
       <CommandList>
-        <CommandGroup heading="Documents">
+        <CommandGroup heading="Pages">
           {pages.map((page) => (
             <CommandItem
               key={page.id}
