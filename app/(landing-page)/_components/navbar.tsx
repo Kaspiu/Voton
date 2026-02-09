@@ -30,7 +30,7 @@ const Navbar = () => {
     <div
       className={cn(
         "fixed top-0 z-50 flex w-full items-center justify-between bg-background p-6 text-primary transition-all duration-300 dark:bg-[#1F1F1F]",
-        scrolled && "shadow-md rounded-b-md"
+        scrolled && "shadow-md rounded-b-md",
       )}
     >
       <GithubButton className="hidden max-sm:flex" />

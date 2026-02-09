@@ -101,7 +101,7 @@ export const SettingsModal = () => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent>
+      <DialogContent closeClassName="top-6 right-6">
         <DialogHeader className="border-b pb-4">
           <DialogTitle>Workspace settings</DialogTitle>
         </DialogHeader>

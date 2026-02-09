@@ -18,7 +18,7 @@ export const Card = ({
     <div
       className={cn(
         "flex flex-col items-center justify-center w-full max-w-xl h-96 gap-6 rounded-lg border bg-background p-12 mx-6 text-primary shadow-lg dark:bg-input/30 max-sm:w-4/5 max-sm:h-fit max-sm:p-10",
-        className
+        className,
       )}
     >
       <div className="rounded-md bg-primary p-3 text-primary-foreground">

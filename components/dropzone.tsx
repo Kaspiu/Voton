@@ -57,7 +57,7 @@ export const ImageDropzone: React.FC<ImageDropzoneProps> = ({
         }
       }
     },
-    [onImageSelect]
+    [onImageSelect],
   );
 
   const { getRootProps, getInputProps, isDragActive, isDragReject } =
@@ -93,7 +93,7 @@ export const ImageDropzone: React.FC<ImageDropzoneProps> = ({
             "border-muted-foreground bg-secondary",
           isDragReject && "bg-red-50 border-red-500",
           !isDragActive && !isDragReject && "hover:border-muted-foreground",
-          previewUrl && "border-1 border-solid p-0"
+          previewUrl && "border-1 border-solid p-0",
         )}
       >
         <input {...getInputProps()} />

@@ -212,7 +212,7 @@ const Navigation = () => {
                 className="group flex cursor-pointer items-center rounded-sm py-1 mx-1 text-sm font-medium transition-all hover:bg-muted-foreground/10 data-[state=open]:bg-muted-foreground/10"
               >
                 <CirclePlus className="mr-2 ml-4.5 h-4 w-4 shrink-0" />
-                New
+                Add
                 <ChevronRight
                   className={cn(
                     "h-4 w-4 shrink-0 ml-auto mr-2 transition-all",
@@ -226,17 +226,17 @@ const Navigation = () => {
               side={isMobile ? "bottom" : "right"}
             >
               <DropdownMenuItem onClick={onCreatePage}>
-                <File className="h-4 w-4 shrink-0" /> Page
+                <File className="h-4 w-4 shrink-0" /> New page
               </DropdownMenuItem>
               <DropdownMenuItem onClick={onCreateFolder}>
-                <Folder className="h-4 w-4 shrink-0" /> Folder
+                <Folder className="h-4 w-4 shrink-0" /> New folder
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
 
-        <p className="pl-5.5 pr-1 text-xs font-bold text-muted-foreground/50">
-          WORKSPACE
+        <p className="pl-5.5 pr-3 text-xs font-bold text-muted-foreground/50">
+          Workspace
         </p>
 
         <div className="py-2 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-secondary [&::-webkit-scrollbar-thumb]:bg-muted-foreground/15 [&::-webkit-scrollbar-thumb]:rounded-sm truncate">

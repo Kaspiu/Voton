@@ -105,7 +105,7 @@ export async function getChildFolders(parentId: string): Promise<Folder[]> {
 // Updates a page
 export async function updatePage(
   id: string,
-  updates: Partial<Omit<Page, "id">>
+  updates: Partial<Omit<Page, "id">>,
 ): Promise<Page | null> {
   const db = await getDB();
   const existingPage = await db.get("pages", id);
@@ -128,7 +128,7 @@ export async function updatePage(
 // Updates a folder
 export async function updateFolder(
   id: string,
-  updates: Partial<Omit<Folder, "id">>
+  updates: Partial<Omit<Folder, "id">>,
 ): Promise<Folder | null> {
   const db = await getDB();
   const existingFolder = await db.get("folders", id);

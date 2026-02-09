@@ -4,12 +4,13 @@ A privacy-focused note-taking web application inspired by Notion and Obsidian. B
 
 ## Features
 
-- **Hierarchical Organization** - Create folders and pages with unlimited nesting depth
-- **Visual Personalization** - Custom cover images and emoji icons for pages, color coding for folders
-- **Theme Customization** - Choose between light, dark, or system theme modes
-- **Privacy-First** - All data stored locally in your browser with complete privacy
-- **Seamless Data Portability** - Export and import your notes as JSON files
-- **Edit Tracking** - See when each page was last modified with timestamps displayed in the top-right corner
+- **Hierarchical Organization** - Structure your knowledge with folders and pages featuring unlimited nesting depth
+- **Rich Text Editor** - Block-based editing with support for tables, task lists, and markdown shortcuts
+- **Visual Personalization** - Make it yours with custom cover images, page icons, and color-coded folders
+- **Theme Customization** - Built-in dark and light modes that adapt to your system preferences
+- **Privacy-First Architecture** - All data is stored locally in your browser using IndexedDB, ensuring complete privacy
+- **Data Portability** - Easily export and import your entire workspace as JSON
+- **Edit Tracking** - Keep track of changes with automatic last-modified timestamps
 
 ## Tech Stack
 

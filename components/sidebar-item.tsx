@@ -6,8 +6,8 @@ import {
   ChevronRight,
   CornerUpRight,
   Ellipsis,
-  FilePlus,
-  FolderPlus,
+  File,
+  Folder,
   LucideIcon,
   Palette,
   Pen,
@@ -122,8 +122,7 @@ export const SidebarItem = ({
   };
 
   // Create a new child page
-  const onCreatePage = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const onCreatePage = () => {
     if (!id) return;
 
     const promise = addPage({
@@ -146,8 +145,7 @@ export const SidebarItem = ({
   };
 
   // Create a new child folder
-  const onCreateFolder = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const onCreateFolder = () => {
     if (!id) return;
 
     const promise = addFolder({
@@ -295,81 +293,92 @@ export const SidebarItem = ({
               }}
             >
               {type === "folder" && (
-                <DropdownMenuSub>
-                  <DropdownMenuSubTrigger>
-                    <Palette className="h-4 w-4 shrink-0" />
-                    Colors
-                  </DropdownMenuSubTrigger>
-                  <DropdownMenuPortal>
-                    <DropdownMenuSubContent>
-                      <DropdownMenuRadioGroup
-                        value={color || ""}
-                        onValueChange={(value) => {
-                          if (!id) return;
-                          updateFolder(id, { color: value });
-                        }}
-                      >
-                        <DropdownMenuRadioItem value="">
-                          Default
-                        </DropdownMenuRadioItem>
-                        <DropdownMenuRadioItem
-                          value="gray"
-                          className="text-gray-500"
-                        >
-                          Gray
-                        </DropdownMenuRadioItem>
-                        <DropdownMenuRadioItem
-                          value="red"
-                          className="text-red-500"
-                        >
-                          Red
-                        </DropdownMenuRadioItem>
-                        <DropdownMenuRadioItem
-                          value="orange"
-                          className="text-orange-500"
-                        >
-                          Orange
-                        </DropdownMenuRadioItem>
-                        <DropdownMenuRadioItem
-                          value="yellow"
-                          className="text-yellow-500"
-                        >
-                          Yellow
-                        </DropdownMenuRadioItem>
-                        <DropdownMenuRadioItem
-                          value="green"
-                          className="text-green-500"
-                        >
-                          Green
-                        </DropdownMenuRadioItem>
-                        <DropdownMenuRadioItem
-                          value="blue"
-                          className="text-blue-500"
-                        >
-                          Blue
-                        </DropdownMenuRadioItem>
-                        <DropdownMenuRadioItem
-                          value="purple"
-                          className="text-purple-500"
-                        >
-                          Purple
-                        </DropdownMenuRadioItem>
-                        <DropdownMenuRadioItem
-                          value="pink"
-                          className="text-pink-500"
-                        >
-                          Pink
-                        </DropdownMenuRadioItem>
-                      </DropdownMenuRadioGroup>
-                    </DropdownMenuSubContent>
-                  </DropdownMenuPortal>
-                </DropdownMenuSub>
-              )}
+                <>
+                  <DropdownMenuItem onSelect={onCreatePage}>
+                    <File className="h-4 w-4 shrink-0" />
+                    New page
+                  </DropdownMenuItem>
 
-              <DropdownMenuItem onSelect={enableInput}>
-                <Pen className="h-4 w-4 shrink-0" />
-                Rename
-              </DropdownMenuItem>
+                  <DropdownMenuItem onSelect={onCreateFolder}>
+                    <Folder className="h-4 w-4 shrink-0" />
+                    New folder
+                  </DropdownMenuItem>
+
+                  <DropdownMenuSeparator />
+
+                  <DropdownMenuSub>
+                    <DropdownMenuSubTrigger>
+                      <Palette className="h-4 w-4 shrink-0" />
+                      Colors
+                    </DropdownMenuSubTrigger>
+                    <DropdownMenuPortal>
+                      <DropdownMenuSubContent>
+                        <DropdownMenuRadioGroup
+                          value={color || ""}
+                          onValueChange={(value) => {
+                            if (!id) return;
+                            updateFolder(id, { color: value });
+                          }}
+                        >
+                          <DropdownMenuRadioItem value="">
+                            Default
+                          </DropdownMenuRadioItem>
+                          <DropdownMenuRadioItem
+                            value="gray"
+                            className="text-gray-500"
+                          >
+                            Gray
+                          </DropdownMenuRadioItem>
+                          <DropdownMenuRadioItem
+                            value="red"
+                            className="text-red-500"
+                          >
+                            Red
+                          </DropdownMenuRadioItem>
+                          <DropdownMenuRadioItem
+                            value="orange"
+                            className="text-orange-500"
+                          >
+                            Orange
+                          </DropdownMenuRadioItem>
+                          <DropdownMenuRadioItem
+                            value="yellow"
+                            className="text-yellow-500"
+                          >
+                            Yellow
+                          </DropdownMenuRadioItem>
+                          <DropdownMenuRadioItem
+                            value="green"
+                            className="text-green-500"
+                          >
+                            Green
+                          </DropdownMenuRadioItem>
+                          <DropdownMenuRadioItem
+                            value="blue"
+                            className="text-blue-500"
+                          >
+                            Blue
+                          </DropdownMenuRadioItem>
+                          <DropdownMenuRadioItem
+                            value="purple"
+                            className="text-purple-500"
+                          >
+                            Purple
+                          </DropdownMenuRadioItem>
+                          <DropdownMenuRadioItem
+                            value="pink"
+                            className="text-pink-500"
+                          >
+                            Pink
+                          </DropdownMenuRadioItem>
+                        </DropdownMenuRadioGroup>
+                      </DropdownMenuSubContent>
+                    </DropdownMenuPortal>
+                  </DropdownMenuSub>
+
+                  <DropdownMenuSeparator />
+                </>
+              )}
 
               <DropdownMenuItem
                 onSelect={() => {
@@ -379,6 +388,11 @@ export const SidebarItem = ({
               >
                 <CornerUpRight className="h-4 w-4 shrink-0" />
                 Move to
+              </DropdownMenuItem>
+
+              <DropdownMenuItem onSelect={enableInput}>
+                <Pen className="h-4 w-4 shrink-0" />
+                Rename
               </DropdownMenuItem>
 
               <DropdownMenuSeparator />
@@ -396,23 +410,6 @@ export const SidebarItem = ({
               </DeleteModal>
             </DropdownMenuContent>
           </DropdownMenu>
-
-          {type === "folder" && (
-            <>
-              <button
-                onClick={onCreatePage}
-                className="flex cursor-pointer items-center justify-center rounded-sm p-0.5 opacity-0 transition-all group-hover:opacity-100 hover:bg-muted-foreground/15 group-focus-within:opacity-100"
-              >
-                <FilePlus className="h-4 w-4 shrink-0" />
-              </button>
-              <button
-                onClick={onCreateFolder}
-                className="flex cursor-pointer items-center justify-center rounded-sm p-0.5 opacity-0 transition-all group-hover:opacity-100 hover:bg-muted-foreground/15 group-focus-within:opacity-100"
-              >
-                <FolderPlus className="h-4 w-4 shrink-0" />
-              </button>
-            </>
-          )}
         </div>
       )}
     </div>

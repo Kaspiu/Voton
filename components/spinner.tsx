@@ -16,7 +16,7 @@ const spinnerVariants = cva(
     defaultVariants: {
       size: "default",
     },
-  }
+  },
 );
 
 type SpinnerProps = VariantProps<typeof spinnerVariants>;

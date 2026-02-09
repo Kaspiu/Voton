@@ -20,7 +20,8 @@ const imageSizes = {
 };
 
 interface LogoProps
-  extends React.HTMLAttributes<HTMLDivElement>,
+  extends
+    React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof textVariants> {}
 
 export const Logo = ({ size, className }: LogoProps) => {

@@ -24,13 +24,13 @@ export async function exportData(): Promise<void> {
     const folders = await getAllFolders();
     const exportTimestamp = new Date().toISOString();
     const exportDate = exportTimestamp.split("T")[0];
-    const data: VotonExportData = {
-      version: "2.0.3",
+    const votonData: VotonExportData = {
+      version: "2.0.35",
       exportDate: exportTimestamp,
       pages,
       folders,
     };
-    const jsonString = JSON.stringify(data, null, 2);
+    const jsonString = JSON.stringify(votonData, null, 2);
     const blob = new Blob([jsonString], { type: "application/json" });
 
     url = URL.createObjectURL(blob);
@@ -103,9 +103,9 @@ export async function importData(): Promise<void> {
               throw new Error("File is empty or could not be read.");
             }
 
-            const data = JSON.parse(jsonString) as VotonExportData;
+            const votonData = JSON.parse(jsonString) as VotonExportData;
 
-            if (!validateExportData(data)) {
+            if (!validateExportData(votonData)) {
               throw new Error("Invalid export file format");
             }
 
@@ -115,8 +115,8 @@ export async function importData(): Promise<void> {
             const foldersStore = tx.objectStore("folders");
 
             await Promise.all([
-              ...data.pages.map((page) => pagesStore.put(page)),
-              ...data.folders.map((folder) => foldersStore.put(folder)),
+              ...votonData.pages.map((page) => pagesStore.put(page)),
+              ...votonData.folders.map((folder) => foldersStore.put(folder)),
             ]);
             await tx.done;
 
@@ -146,71 +146,92 @@ export async function importData(): Promise<void> {
 // Clears all data from the database
 export async function clearAllData(): Promise<void> {
   const db = await getDB();
-  await db.clear("pages");
-  await db.clear("folders");
+  const tx = db.transaction(["pages", "folders"], "readwrite");
 
+  await Promise.all([
+    tx.objectStore("pages").clear(),
+    tx.objectStore("folders").clear(),
+  ]);
+
+  await tx.done;
   notifyDelete();
 }
 
 // Validates the imported data structure
 export function validateExportData(data: unknown): data is VotonExportData {
+  if (!data || typeof data !== "object") {
+    return false;
+  }
+
+  const votonData = data as VotonExportData;
+
   if (
-    !data ||
-    typeof data !== "object" ||
-    typeof (data as VotonExportData).version !== "string" ||
-    typeof (data as VotonExportData).exportDate !== "string" ||
-    !Array.isArray((data as VotonExportData).pages) ||
-    !Array.isArray((data as VotonExportData).folders)
+    typeof votonData.version !== "string" ||
+    typeof votonData.exportDate !== "string" ||
+    !Array.isArray(votonData.pages) ||
+    !Array.isArray(votonData.folders)
   ) {
     return false;
   }
 
+  const optionalPageProps: (keyof Page)[] = [
+    "parentFolder",
+    "content",
+    "coverImage",
+    "icon",
+  ];
+
   // Validate pages
-  const pages = (data as VotonExportData).pages;
-  const pagesValid = pages.every((page) => {
+  const arePagesValid = votonData.pages.every((page) => {
     if (
       !page ||
       typeof page !== "object" ||
+      Array.isArray(page) ||
       typeof page.id !== "string" ||
-      typeof page.title !== "string" ||
-      Array.isArray(page)
+      typeof page.title !== "string"
     ) {
       return false;
     }
 
-    const optionalStringProps: (keyof Page)[] = [
-      "parentFolder",
-      "content",
-      "coverImage",
-      "icon",
-    ];
-    const stringsValid = optionalStringProps.every(
+    const areStringsValid = optionalPageProps.every(
       (prop) => !(prop in page) || typeof page[prop] === "string",
     );
 
-    if (!stringsValid) return false;
+    if (!areStringsValid) {
+      return false;
+    }
 
-    return !("updatedAt" in page) || typeof page.updatedAt === "number";
+    if ("updatedAt" in page && typeof page.updatedAt !== "number") {
+      return false;
+    }
+
+    return true;
   });
 
-  if (!pagesValid) return false;
+  const optionalFolderProps: (keyof Folder)[] = ["parentFolder", "color"];
 
   // Validate folders
-  const folders = (data as VotonExportData).folders;
-  return folders.every((folder) => {
+  const areFoldersValid = votonData.folders.every((folder) => {
     if (
       !folder ||
       typeof folder !== "object" ||
+      Array.isArray(folder) ||
       typeof folder.id !== "string" ||
-      typeof folder.title !== "string" ||
-      Array.isArray(folder)
+      typeof folder.title !== "string"
     ) {
       return false;
     }
 
-    const optionalStringProps: (keyof Folder)[] = ["parentFolder", "color"];
-    return optionalStringProps.every(
+    const areStringsValid = optionalFolderProps.every(
       (prop) => !(prop in folder) || typeof folder[prop] === "string",
     );
+
+    if (!areStringsValid) {
+      return false;
+    }
+
+    return true;
   });
+
+  return arePagesValid && areFoldersValid;
 }
