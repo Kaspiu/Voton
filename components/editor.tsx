@@ -40,8 +40,89 @@ export default function Editor({ onChange, initialData }: EditorProps) {
   // Remove the file block from the default schema
   const { file, ...remainingBlockSpecs } = defaultBlockSpecs;
 
-  const customCodeBlock = createCodeBlockSpec(codeBlockOptions);
+  // Configures the custom code block spec
+  const customCodeBlock = createCodeBlockSpec({
+    indentLineWithTab: true,
+    defaultLanguage: "typescript",
+    supportedLanguages: {
+      plaintext: {
+        name: "Plain Text",
+        aliases: ["text"],
+      },
+      typescript: {
+        name: "TypeScript",
+        aliases: ["ts"],
+      },
+      javascript: {
+        name: "JavaScript",
+        aliases: ["js"],
+      },
+      python: {
+        name: "Python",
+        aliases: ["py"],
+      },
+      java: {
+        name: "Java",
+      },
+      csharp: {
+        name: "C#",
+        aliases: ["cs"],
+      },
+      cpp: {
+        name: "C++",
+        aliases: ["c++"],
+      },
+      go: {
+        name: "Go",
+        aliases: ["golang"],
+      },
+      rust: {
+        name: "Rust",
+        aliases: ["rs"],
+      },
+      php: {
+        name: "PHP",
+      },
+      ruby: {
+        name: "Ruby",
+        aliases: ["rb"],
+      },
+      swift: {
+        name: "Swift",
+      },
+      kotlin: {
+        name: "Kotlin",
+        aliases: ["kt"],
+      },
+      html: {
+        name: "HTML",
+      },
+      css: {
+        name: "CSS",
+      },
+      sql: {
+        name: "SQL",
+      },
+      bash: {
+        name: "Bash",
+        aliases: ["shell", "sh"],
+      },
+      json: {
+        name: "JSON",
+      },
+      yaml: {
+        name: "YAML",
+        aliases: ["yml"],
+      },
+      markdown: {
+        name: "Markdown",
+        aliases: ["md"],
+      },
+    },
+    createHighlighter: codeBlockOptions.createHighlighter,
+  });
 
+  // Configures the editor schema.
   const schema = BlockNoteSchema.create({
     blockSpecs: {
       ...remainingBlockSpecs,
