@@ -5,9 +5,11 @@ import {
   BlockNoteSchema,
   defaultBlockSpecs,
   PartialBlock,
+  createCodeBlockSpec,
 } from "@blocknote/core";
 import { BlockNoteView } from "@blocknote/mantine";
 import { useCreateBlockNote } from "@blocknote/react";
+import { codeBlockOptions } from "@blocknote/code-block";
 
 import "@blocknote/core/fonts/inter.css";
 import "@blocknote/mantine/style.css";
@@ -38,9 +40,12 @@ export default function Editor({ onChange, initialData }: EditorProps) {
   // Remove the file block from the default schema
   const { file, ...remainingBlockSpecs } = defaultBlockSpecs;
 
+  const customCodeBlock = createCodeBlockSpec(codeBlockOptions);
+
   const schema = BlockNoteSchema.create({
     blockSpecs: {
       ...remainingBlockSpecs,
+      codeBlock: customCodeBlock,
     },
   });
 
