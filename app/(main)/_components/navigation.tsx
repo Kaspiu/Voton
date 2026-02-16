@@ -20,7 +20,7 @@ import { useMediaQuery } from "usehooks-ts";
 
 import { useSearch } from "@/hooks/use-search";
 import { useSettings } from "@/hooks/use-settings";
-import { addFolder, addPage } from "@/lib/database/documents";
+import { addFolder, addPage, getPage } from "@/lib/database/documents";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/logo";
 import { SidebarItem } from "@/components/sidebar-item";
@@ -48,6 +48,7 @@ const Navigation = () => {
 
   const [isCollapsed, setIsCollapsed] = useState(isMobile);
   const [isResetting, setIsResetting] = useState(false);
+  const [isDocumentFound, setIsDocumentFound] = useState(true);
 
   // Collapses sidebar to zero width
   const collapseSidebar = () => {
@@ -170,6 +171,18 @@ const Navigation = () => {
     }
   }, [isMobile, pathName]);
 
+  // Checks if document exists
+  useEffect(() => {
+    const checkDocument = async () => {
+      setIsDocumentFound(true);
+      if (params.documentId) {
+        const page = await getPage(params.documentId as string);
+        setIsDocumentFound(!!page);
+      }
+    };
+    checkDocument();
+  }, [params.documentId]);
+
   return (
     <>
       <aside
@@ -258,7 +271,7 @@ const Navigation = () => {
           isMobile && "left-0 w-full",
         )}
       >
-        {!!params.documentId ? (
+        {!!params.documentId && isDocumentFound ? (
           <Navbar isCollapsed={isCollapsed} onResetWidth={resetSidebarWidth} />
         ) : (
           <nav className="w-full p-4 pt-6">

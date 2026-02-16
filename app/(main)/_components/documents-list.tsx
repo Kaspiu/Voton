@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { File, Folder as FolderIcon } from "lucide-react";
 
 import { SidebarItem } from "@/components/sidebar-item";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   getChildFolders,
   getChildPages,
@@ -27,8 +28,11 @@ export const DocumentsList = ({
 }: DocumentsListProps) => {
   const params = useParams();
   const router = useRouter();
+  const paddingLeft = expandLevel ? `${expandLevel * 24 + 22}px` : "22px";
 
-  const [documents, setDocuments] = useState<DocumentItem[]>([]);
+  const [documents, setDocuments] = useState<DocumentItem[] | undefined>(
+    undefined,
+  );
   const [isExpanded, setIsExpanded] = useState<Record<string, boolean>>(() => {
     try {
       if (typeof window !== "undefined") {
@@ -99,14 +103,37 @@ export const DocumentsList = ({
     };
   }, [parentDocumentId]);
 
+  if (documents === undefined) {
+    return (
+      <>
+        {expandLevel === 0 ? (
+          <div className="py-2">
+            <div style={{ paddingLeft }} className="flex gap-2 mb-2">
+              <Skeleton className="h-4 w-10 rounded-sm" />
+              <Skeleton className="h-4 w-24 rounded-sm" />
+            </div>
+
+            <div style={{ paddingLeft }} className="flex gap-2">
+              <Skeleton className="h-4 w-4 rounded-sm" />
+              <Skeleton className="h-4 w-24 rounded-sm" />
+            </div>
+          </div>
+        ) : (
+          <div style={{ paddingLeft }} className="flex gap-2 py-1">
+            <Skeleton className="h-4 w-4 rounded-sm" />
+            <Skeleton className="h-4 w-24 rounded-sm" />
+          </div>
+        )}
+      </>
+    );
+  }
+
   return (
     <>
       <p
-        style={{
-          paddingLeft: expandLevel ? `${expandLevel * 18 + 22}px` : "22px",
-        }}
+        style={{ paddingLeft }}
         className={cn(
-          "hidden font-medium pr-1 text-muted-foreground/50 text-sm truncate",
+          "hidden font-medium pr-3 text-muted-foreground/50 text-sm truncate",
           expandLevel === 0 && "hidden",
           expandLevel > 0 && "last:block",
         )}

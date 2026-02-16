@@ -6,6 +6,7 @@ import { Clock, Ellipsis, Menu, Trash, X } from "lucide-react";
 import { toast } from "sonner";
 
 import { DeleteModal } from "@/components/modals/delete-modal";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -46,7 +47,7 @@ export const Navbar = ({ isCollapsed, onResetWidth }: NavbarProps) => {
   const router = useRouter();
   const params = useParams();
 
-  const [title, setTitle] = useState("");
+  const [title, setTitle] = useState<string | undefined>(undefined);
   const [updatedAt, setUpdatedAt] = useState<number>();
   const [formattedTime, setFormattedTime] = useState("");
 
@@ -104,61 +105,71 @@ export const Navbar = ({ isCollapsed, onResetWidth }: NavbarProps) => {
             <Menu className="h-6 w-6 shrink-0" />
           </div>
         )}
-        <div className="flex flex-1 items-center justify-between gap-4 min-w-0">
-          <span className="truncate text-lg font-medium text-muted-foreground">
-            {title}
-          </span>
+        <div className="flex flex-1 items-center justify-between gap-4 h-[30px] min-w-0">
+          {title === undefined ? (
+            <Skeleton className="h-6 w-24" />
+          ) : (
+            <span className="truncate text-lg font-medium text-muted-foreground">
+              {title}
+            </span>
+          )}
 
           <div className="flex items-center justify-center gap-2">
-            {updatedAt && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <div
-                    role="button"
-                    className="h-fit w-fit cursor-pointer rounded-md p-[7px] text-muted-foreground transition-all hover:bg-muted-foreground/10 data-[state=open]:bg-muted-foreground/10"
-                  >
-                    <Clock className="h-4 w-4 shrink-0" />
-                  </div>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  side="bottom"
-                  className="flex items-center justify-center text-sm font-medium text-muted-foreground"
-                >
-                  <span className="px-2 py-1.5">{formattedTime}</span>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
+            {title === undefined ? (
+              <Skeleton className="h-6 w-16" />
+            ) : (
+              <>
+                {updatedAt && (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <div
+                        role="button"
+                        className="h-fit w-fit cursor-pointer rounded-md p-[7px] text-muted-foreground transition-all hover:bg-muted-foreground/10 data-[state=open]:bg-muted-foreground/10"
+                      >
+                        <Clock className="h-4 w-4 shrink-0" />
+                      </div>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent
+                      side="bottom"
+                      className="flex items-center justify-center text-sm font-medium text-muted-foreground"
+                    >
+                      <span className="px-2 py-1.5">{formattedTime}</span>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                )}
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <div
-                  role="button"
-                  className="h-fit w-fit cursor-pointer rounded-md p-[3px] text-muted-foreground transition-all hover:bg-muted-foreground/10 data-[state=open]:bg-muted-foreground/10"
-                >
-                  <Ellipsis className="h-6 w-6 shrink-0" />
-                </div>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={onClose}>
-                  <X className="h-4 w-4 shrink-0" />
-                  Close
-                </DropdownMenuItem>
-
-                <DropdownMenuSeparator />
-
-                <DeleteModal onDelete={onDelete}>
-                  <DropdownMenuItem
-                    onSelect={(e) => e.preventDefault()}
-                    variant="destructive"
-                  >
-                    <div className="flex items-center gap-2">
-                      <Trash className="h-4 w-4 shrink-0 text-destructive" />
-                      Delete
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <div
+                      role="button"
+                      className="h-fit w-fit cursor-pointer rounded-md p-[3px] text-muted-foreground transition-all hover:bg-muted-foreground/10 data-[state=open]:bg-muted-foreground/10"
+                    >
+                      <Ellipsis className="h-6 w-6 shrink-0" />
                     </div>
-                  </DropdownMenuItem>
-                </DeleteModal>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={onClose}>
+                      <X className="h-4 w-4 shrink-0" />
+                      Close
+                    </DropdownMenuItem>
+
+                    <DropdownMenuSeparator />
+
+                    <DeleteModal onDelete={onDelete}>
+                      <DropdownMenuItem
+                        onSelect={(e) => e.preventDefault()}
+                        variant="destructive"
+                      >
+                        <div className="flex items-center gap-2">
+                          <Trash className="h-4 w-4 shrink-0 text-destructive" />
+                          Delete
+                        </div>
+                      </DropdownMenuItem>
+                    </DeleteModal>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </>
+            )}
           </div>
         </div>
       </nav>

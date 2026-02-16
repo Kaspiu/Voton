@@ -7,7 +7,7 @@ import { notFound, useParams } from "next/navigation";
 import { CoverImage } from "@/app/(main)/_components/cover";
 import { Toolbar } from "@/app/(main)/_components/toolbar";
 import { CoverImageModal } from "@/components/modals/cover-image-modal";
-import { Spinner } from "@/components/spinner";
+import { Skeleton } from "@/components/ui/skeleton";
 import { getPage, updatePage } from "@/lib/database/documents";
 import { Page } from "@/lib/database/types";
 
@@ -17,8 +17,7 @@ const DocumentIdPage = () => {
     [],
   );
 
-  const [isLoading, setIsLoading] = useState(true);
-  const [page, setPage] = useState<Page | null>(null);
+  const [page, setPage] = useState<Page | null | undefined>(undefined);
   const params = useParams();
 
   // Fetches the page data and manages loading state.
@@ -29,7 +28,6 @@ const DocumentIdPage = () => {
       const pageData = await getPage(params.documentId as string);
 
       setPage(pageData ?? null);
-      setIsLoading(false);
     };
 
     fetchPage();
@@ -48,15 +46,22 @@ const DocumentIdPage = () => {
     }
   };
 
-  if (isLoading) {
+  if (page === undefined) {
     return (
-      <div className="flex h-full items-center justify-center">
-        <Spinner size="lg" />
+      <div className="mt-[62px]">
+        <Skeleton className="h-[15vh] w-full" />
+        <div className="max-w-5xl space-y-4 pl-16 mt-14">
+          <Skeleton className="mt-20 mb-14 h-14 w-1/3" />
+          <Skeleton className="h-5 w-3/4 rounded-sm" />
+          <Skeleton className="h-5 w-2/5 rounded-sm" />
+          <Skeleton className="h-5 w-3/5 rounded-sm" />
+          <Skeleton className="h-5 w-1/2 rounded-sm" />
+        </div>
       </div>
     );
   }
 
-  if (!page) return notFound();
+  if (page === null) return notFound();
 
   return (
     <div className="pb-40">
