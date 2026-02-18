@@ -1,8 +1,8 @@
 "use client";
 
 import { File } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 import {
   CommandDialog,
@@ -16,12 +16,14 @@ import { useSearch } from "@/hooks/use-search";
 import { getAllPages } from "@/lib/database/documents";
 import { Page } from "@/lib/database/types";
 
+const SEARCH_SHORTCUT_KEY = "k";
+
 export const SearchCommand = () => {
   const router = useRouter();
   const { isOpen, onClose, toggle } = useSearch();
   const [pages, setPages] = useState<Page[]>([]);
 
-  // Fetches pages on mount and listens for page changes.
+  // Fetches all pages and re-fetches whenever workspace items change or are deleted.
   useEffect(() => {
     const fetchPages = async () => {
       try {
@@ -42,19 +44,20 @@ export const SearchCommand = () => {
     };
   }, []);
 
-  // Adds a keyboard shortcut (Ctrl/Cmd + K) to toggle the search command.
+  // Registers the Ctrl/Cmd+K keyboard shortcut to open or close the search palette.
   useEffect(() => {
-    const down = (e: KeyboardEvent) => {
-      if (e.key === "k" && (e.ctrlKey || e.metaKey)) {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === SEARCH_SHORTCUT_KEY && (e.ctrlKey || e.metaKey)) {
         e.preventDefault();
         toggle();
       }
     };
-    document.addEventListener("keydown", down);
-    return () => document.removeEventListener("keydown", down);
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
   }, [toggle]);
 
-  // Navigates to the selected page and closes the search command.
+  // Navigates to the selected page and closes the search palette.
   const onSelect = (id: string) => {
     router.push(`/documents/${id}`);
     onClose();

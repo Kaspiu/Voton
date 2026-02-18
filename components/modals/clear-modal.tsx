@@ -11,7 +11,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 
 interface ClearModalProps {
   onClear: () => void;
@@ -24,7 +24,7 @@ export const ClearModal = ({ onClear }: ClearModalProps) => {
         <Button
           variant="outline"
           size="sm"
-          className="cursor-pointer text-muted-foreground text-xs"
+          className="cursor-pointer text-xs text-muted-foreground"
         >
           Clear
         </Button>

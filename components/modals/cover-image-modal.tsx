@@ -18,17 +18,15 @@ interface CoverImageModalProps {
 export const CoverImageModal = ({ initialData }: CoverImageModalProps) => {
   const { isOpen, onClose } = useCoverImage();
 
-  // Handles the selection of a new cover image file from the dropzone.
+  // Saves the selected cover image URL to the page and closes the modal.
   const onImageSelect = (base64Url: string) => {
-    updatePage(initialData.id, {
-      coverImage: base64Url,
-    });
+    updatePage(initialData.id, { coverImage: base64Url });
     onClose();
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent>
+      <DialogContent closeClassName="top-6 right-6">
         <DialogHeader>
           <DialogTitle>Select a cover</DialogTitle>
         </DialogHeader>

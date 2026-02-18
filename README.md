@@ -1,33 +1,34 @@
 # Voton
 
-A privacy-focused note-taking web application inspired by Notion and Obsidian. Built with Next.js and IndexedDB, Voton keeps all your data locally in your browser with no servers or accounts required.
+A privacy-focused note-taking web application inspired by Notion and Obsidian and built with Next.js. All your data stays in your browser—no servers, no accounts, no tracking.
 
 ## Features
 
-- **Hierarchical Organization** - Structure your knowledge with folders and pages featuring unlimited nesting depth
-- **Rich Text Editor** - Block-based editing with support for tables, task lists, and markdown shortcuts
-- **Visual Personalization** - Make it yours with custom cover images, page icons, and color-coded folders
-- **Theme Customization** - Built-in dark and light modes that adapt to your system preferences
-- **Privacy-First Architecture** - All data is stored locally in your browser using IndexedDB, ensuring complete privacy
-- **Data Portability** - Easily export and import your entire workspace as JSON
-- **Edit Tracking** - Keep track of changes with automatic last-modified timestamps
+- **Local-first** - All data stored in your browser using IndexedDB
+- **Hierarchical organization** - Unlimited nested folders and pages
+- **Rich text editing** - Block-based editor with tables, tasks, and markdown shortcuts
+- **Visual customization** - Cover images, emoji icons, and color-coded folders
+- **Dark mode** - Automatically adapts to your system preferences
+- **Data portability** - Export/import your entire workspace as JSON
+- **Auto-save** - Changes saved instantly with automatic timestamps
 
 ## Tech Stack
 
-- **Next.js** - React framework with TypeScript (.tsx files)
+- **Next.js 16** - React 19 framework with TypeScript
 - **Tailwind CSS** - Utility-first styling
 - **Shadcn UI** - Reusable component library
-- **IndexedDB** - Local browser storage via `idb` library
-- **BlockNote.js** - Rich text block editor
+- **IndexedDB** - Client-side storage via `idb`
+- **BlockNote** - Rich text block editor
+- **Zustand** - Lightweight state management
 
-## Visit Website
+## Getting Started
 
-- [Voton](https://voton.vercel.app/)
+Just visit **[voton.vercel.app](https://voton.vercel.app/)** and start creating. No sign-up required.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT License - see [LICENSE](LICENSE) for details.
 
-## Authors
+## Author
 
-- [@Kaspiu](https://github.com/Kaspiu)
+[@Kaspiu](https://github.com/Kaspiu)

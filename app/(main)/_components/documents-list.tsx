@@ -15,12 +15,39 @@ import {
 import { Folder, Page } from "@/lib/database/types";
 import { cn } from "@/lib/utils";
 
+type DocumentItem = (Page & { type: "page" }) | (Folder & { type: "folder" });
+
+// Loads the expanded state of folders from localStorage, returning an empty object on error.
+const loadExpandedState = (): Record<string, boolean> => {
+  try {
+    if (typeof window === "undefined") return {};
+    return JSON.parse(localStorage.getItem("sidebar-expanded-folders") || "{}");
+  } catch (error) {
+    console.error("Failed to load sidebar state:", error);
+    return {};
+  }
+};
+
+// Saves the expanded state of a specific folder to localStorage.
+const saveExpandedState = (id: string, isExpanded: boolean): void => {
+  try {
+    const currentState = JSON.parse(
+      localStorage.getItem("sidebar-expanded-folders") || "{}",
+    );
+    currentState[id] = isExpanded;
+    localStorage.setItem(
+      "sidebar-expanded-folders",
+      JSON.stringify(currentState),
+    );
+  } catch (error) {
+    console.error("Failed to save sidebar state:", error);
+  }
+};
+
 interface DocumentsListProps {
   parentDocumentId?: string;
   expandLevel?: number;
 }
-
-type DocumentItem = (Page & { type: "page" }) | (Folder & { type: "folder" });
 
 export const DocumentsList = ({
   parentDocumentId,
@@ -28,47 +55,30 @@ export const DocumentsList = ({
 }: DocumentsListProps) => {
   const params = useParams();
   const router = useRouter();
+
   const paddingLeft = expandLevel ? `${expandLevel * 24 + 22}px` : "22px";
 
   const [documents, setDocuments] = useState<DocumentItem[] | undefined>(
     undefined,
   );
-  const [isExpanded, setIsExpanded] = useState<Record<string, boolean>>(() => {
-    try {
-      if (typeof window !== "undefined") {
-        return JSON.parse(
-          localStorage.getItem("sidebar-expanded-folders") || "{}",
-        );
-      }
-    } catch (error) {
-      console.error("Failed to load sidebar state:", error);
-    }
-    return {};
-  });
+  const [isExpanded, setIsExpanded] =
+    useState<Record<string, boolean>>(loadExpandedState);
 
-  // Toggle expansion state for a document
+  // Toggles the expansion state of a folder in both state and localStorage.
   const onExpand = (id: string) => {
-    setIsExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
-    try {
-      const currentState = JSON.parse(
-        localStorage.getItem("sidebar-expanded-folders") || "{}",
-      );
-      currentState[id] = !currentState[id];
-      localStorage.setItem(
-        "sidebar-expanded-folders",
-        JSON.stringify(currentState),
-      );
-    } catch (error) {
-      console.error("Failed to save sidebar state:", error);
-    }
+    setIsExpanded((prev) => {
+      const newValue = !prev[id];
+      saveExpandedState(id, newValue);
+      return { ...prev, [id]: newValue };
+    });
   };
 
-  // Navigate to the document page
+  // Navigates to the selected page.
   const onRedirect = (id: string) => {
     router.push(`/documents/${id}`);
   };
 
-  // Fetch documents and set up event listeners for updates
+  // Fetches documents and re-fetches whenever workspace items change or are deleted.
   useEffect(() => {
     const fetchPages = async () => {
       try {
@@ -108,7 +118,7 @@ export const DocumentsList = ({
       <>
         {expandLevel === 0 ? (
           <div className="py-2">
-            <div style={{ paddingLeft }} className="flex gap-2 mb-2">
+            <div style={{ paddingLeft }} className="mb-3 flex gap-2">
               <Skeleton className="h-4 w-10 rounded-sm" />
               <Skeleton className="h-4 w-24 rounded-sm" />
             </div>
@@ -133,7 +143,7 @@ export const DocumentsList = ({
       <p
         style={{ paddingLeft }}
         className={cn(
-          "hidden font-medium pr-3 text-muted-foreground/50 text-sm truncate",
+          "hidden truncate pr-3 text-sm font-medium text-muted-foreground/50",
           expandLevel === 0 && "hidden",
           expandLevel > 0 && "last:block",
         )}

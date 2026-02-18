@@ -1,7 +1,10 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
+import { ModeToggle } from "@/components/mode-toggle";
+import { ClearModal } from "@/components/modals/clear-modal";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -10,48 +13,45 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
 import { useSettings } from "@/hooks/use-settings";
-import { toast } from "sonner";
 import {
   clearAllData,
   exportData,
   importData,
 } from "@/lib/database/export-import";
-import { ModeToggle } from "../mode-toggle";
-import { Separator } from "../ui/separator";
-import { ClearModal } from "./clear-modal";
 
 interface SettingsItemProps {
-  itemTitle: string;
-  itemDescription: string;
-  itemFunc: () => void;
-  itemBtnText?: string;
+  title: string;
+  description: string;
+  onAction: () => void;
+  buttonLabel?: string;
   isClear?: boolean;
 }
 
 const SettingsItem = ({
-  itemTitle,
-  itemDescription,
-  itemBtnText,
-  itemFunc,
+  title,
+  description,
+  onAction,
+  buttonLabel,
   isClear,
 }: SettingsItemProps) => {
   return (
     <div className="flex items-center justify-between">
       <div className="flex flex-col gap-2">
-        <Label>{itemTitle}</Label>
-        <span className="text-muted-foreground text-xs">{itemDescription}</span>
+        <Label>{title}</Label>
+        <span className="text-xs text-muted-foreground">{description}</span>
       </div>
       {isClear ? (
-        <ClearModal onClear={itemFunc} />
+        <ClearModal onClear={onAction} />
       ) : (
         <Button
-          onClick={itemFunc}
+          onClick={onAction}
           variant="outline"
           size="sm"
-          className="cursor-pointer text-muted-foreground text-xs"
+          className="cursor-pointer text-xs text-muted-foreground"
         >
-          {itemBtnText}
+          {buttonLabel}
         </Button>
       )}
     </div>
@@ -62,11 +62,9 @@ export const SettingsModal = () => {
   const router = useRouter();
   const { isOpen, onClose } = useSettings();
 
-  // Handles the data import process, shows a toast notification, and navigates on success.
+  // Triggers a data import, closes the modal on success, and shows a toast for each state.
   const onImportData = () => {
-    const promise = importData().then(() => {
-      onClose();
-    });
+    const promise = importData().then(onClose);
 
     toast.promise(promise, {
       loading: "Importing data...",
@@ -75,7 +73,7 @@ export const SettingsModal = () => {
     });
   };
 
-  // Handles the data export process and shows a toast notification.
+  // Triggers a data export and shows a toast for each state.
   const onExportData = () => {
     const promise = exportData();
 
@@ -86,11 +84,9 @@ export const SettingsModal = () => {
     });
   };
 
-  // Handles clearing all data, shows a toast notification, and navigates on success.
+  // Clears all workspace data, redirects to the documents root, and shows a toast for each state.
   const onClearData = () => {
-    const promise = clearAllData().then(() => {
-      router.push(`/documents`);
-    });
+    const promise = clearAllData().then(() => router.push("/documents"));
 
     toast.promise(promise, {
       loading: "Clearing all data...",
@@ -105,35 +101,37 @@ export const SettingsModal = () => {
         <DialogHeader className="border-b pb-4">
           <DialogTitle>Workspace settings</DialogTitle>
         </DialogHeader>
+
         <p className="text-lg font-semibold leading-none">Data management</p>
         <div className="flex flex-col gap-4">
           <SettingsItem
-            itemTitle="Import data"
-            itemDescription="Bring data into your workspace"
-            itemBtnText="Import"
-            itemFunc={onImportData}
+            title="Import data"
+            description="Bring data into your workspace."
+            buttonLabel="Import"
+            onAction={onImportData}
           />
           <SettingsItem
-            itemTitle="Export data"
-            itemDescription="Save a copy of your workspace"
-            itemBtnText="Export"
-            itemFunc={onExportData}
+            title="Export data"
+            description="Save a copy of your workspace."
+            buttonLabel="Export"
+            onAction={onExportData}
           />
           <SettingsItem
-            itemTitle="Clear data"
-            itemDescription="Remove all data permanently"
-            itemFunc={onClearData}
+            title="Clear data"
+            description="Remove all data permanently."
+            onAction={onClearData}
             isClear
           />
         </div>
 
         <Separator />
+
         <p className="text-lg font-semibold leading-none">Appearance</p>
         <div className="flex items-center justify-between">
           <div className="flex flex-col gap-2">
             <Label>Theme</Label>
-            <span className="text-muted-foreground text-xs">
-              Switch between light and dark mode
+            <span className="text-xs text-muted-foreground">
+              Switch between light and dark mode.
             </span>
           </div>
           <ModeToggle />

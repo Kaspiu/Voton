@@ -1,27 +1,27 @@
 import { getDB } from "./database";
-import { Page, Folder } from "./types";
+import { Folder, Page } from "./types";
 
-// Generates a unique page ID
+// Generates a unique page ID using a timestamp and random suffix.
 export function generatePageId(): string {
   return `page_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
 }
 
-// Generates a unique folder ID
+// Generates a unique folder ID using a timestamp.
 export function generateFolderId(): string {
   return `folder_${Date.now()}`;
 }
 
-// Dispatches item-changed event
-export const notifyChanges = () => {
+// Dispatches a custom event on window to signal that an item was created or updated.
+export const notifyChanges = (): void => {
   window.dispatchEvent(new CustomEvent("item-changed"));
 };
 
-// Dispatches item-deleted event
-export const notifyDelete = () => {
+// Dispatches a custom event on window to signal that an item was deleted.
+export const notifyDelete = (): void => {
   window.dispatchEvent(new CustomEvent("item-deleted"));
 };
 
-// Adds a new page
+// Adds a new page to the database and returns the created page.
 export async function addPage(page: Omit<Page, "id">): Promise<Page> {
   const db = await getDB();
   const newPage: Page = {
@@ -35,7 +35,7 @@ export async function addPage(page: Omit<Page, "id">): Promise<Page> {
   return newPage;
 }
 
-// Adds a new folder
+// Adds a new folder to the database and returns the created folder.
 export async function addFolder(folder: Omit<Folder, "id">): Promise<Folder> {
   const db = await getDB();
   const newFolder: Folder = {
@@ -48,61 +48,57 @@ export async function addFolder(folder: Omit<Folder, "id">): Promise<Folder> {
   return newFolder;
 }
 
-// Gets a page by ID
+// Returns a page by ID, or undefined if not found.
 export async function getPage(id: string): Promise<Page | undefined> {
   const db = await getDB();
-  return await db.get("pages", id);
+  return db.get("pages", id);
 }
 
-// Gets a folder by ID
+// Returns a folder by ID, or undefined if not found.
 export async function getFolder(id: string): Promise<Folder | undefined> {
   const db = await getDB();
-  return await db.get("folders", id);
+  return db.get("folders", id);
 }
 
-// Gets all pages
+// Returns all pages in the database.
 export async function getAllPages(): Promise<Page[]> {
   const db = await getDB();
-  return await db.getAll("pages");
+  return db.getAll("pages");
 }
 
-// Gets pages without a parent
-export async function getRootPages(): Promise<Page[]> {
+// Returns all folders in the database.
+export async function getAllFolders(): Promise<Folder[]> {
   const db = await getDB();
-  const allPages = await db.getAll("pages");
-  return allPages.filter((page) => !page.parentFolder);
+  return db.getAll("folders");
 }
 
-// Gets child pages for a parent
+// Returns all pages that have no parent folder.
+export async function getRootPages(): Promise<Page[]> {
+  const pages = await getAllPages();
+  return pages.filter((page) => !page.parentFolder);
+}
+
+// Returns all folders that have no parent folder.
+export async function getRootFolders(): Promise<Folder[]> {
+  const folders = await getAllFolders();
+  return folders.filter((folder) => !folder.parentFolder);
+}
+
+// Returns all pages whose parentFolder matches the given ID.
 export async function getChildPages(parentId: string): Promise<Page[]> {
   const db = await getDB();
   const tx = db.transaction("pages", "readonly");
-  const index = tx.store.index("parentFolder");
-  return await index.getAll(parentId);
+  return tx.store.index("parentFolder").getAll(parentId);
 }
 
-// Gets all folders
-export async function getAllFolders(): Promise<Folder[]> {
-  const db = await getDB();
-  return await db.getAll("folders");
-}
-
-// Gets folders without a parent
-export async function getRootFolders(): Promise<Folder[]> {
-  const db = await getDB();
-  const allFolders = await db.getAll("folders");
-  return allFolders.filter((folder) => !folder.parentFolder);
-}
-
-// Gets child folders for a parent
+// Returns all folders whose parentFolder matches the given ID.
 export async function getChildFolders(parentId: string): Promise<Folder[]> {
   const db = await getDB();
   const tx = db.transaction("folders", "readonly");
-  const index = tx.store.index("parentFolder");
-  return await index.getAll(parentId);
+  return tx.store.index("parentFolder").getAll(parentId);
 }
 
-// Updates a page
+// Merges updates into an existing page, refreshes updatedAt, and persists it. Returns null if not found.
 export async function updatePage(
   id: string,
   updates: Partial<Omit<Page, "id">>,
@@ -125,7 +121,7 @@ export async function updatePage(
   return updatedPage;
 }
 
-// Updates a folder
+// Merges updates into an existing folder and persists it. Returns null if not found.
 export async function updateFolder(
   id: string,
   updates: Partial<Omit<Folder, "id">>,
@@ -137,17 +133,14 @@ export async function updateFolder(
     return null;
   }
 
-  const updatedFolder: Folder = {
-    ...existingFolder,
-    ...updates,
-  };
+  const updatedFolder: Folder = { ...existingFolder, ...updates };
 
   await db.put("folders", updatedFolder);
   notifyChanges();
   return updatedFolder;
 }
 
-// Deletes a page
+// Deletes a page by ID. Returns false if not found.
 export async function deletePage(id: string): Promise<boolean> {
   const db = await getDB();
   const page = await db.get("pages", id);
@@ -161,7 +154,7 @@ export async function deletePage(id: string): Promise<boolean> {
   return true;
 }
 
-// Recursively deletes a folder and its contents
+// Recursively deletes a folder, all its descendant pages, and all its descendant folders. Returns false if not found.
 export async function deleteFolderWithChildren(id: string): Promise<boolean> {
   const db = await getDB();
   const folder = await db.get("folders", id);
@@ -170,19 +163,16 @@ export async function deleteFolderWithChildren(id: string): Promise<boolean> {
     return false;
   }
 
-  // Get all child pages
   const childPages = await getChildPages(id);
   for (const child of childPages) {
     await deletePage(child.id);
   }
 
-  // Get all child folders
   const childFolders = await getChildFolders(id);
   for (const child of childFolders) {
     await deleteFolderWithChildren(child.id);
   }
 
-  // Delete the folder itself
   await db.delete("folders", id);
   notifyDelete();
   return true;

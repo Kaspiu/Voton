@@ -1,7 +1,7 @@
 "use client";
 
-import Image from "next/image";
 import { ImageUp, X } from "lucide-react";
+import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
 import { useCoverImage } from "@/hooks/use-cover-image";
@@ -14,13 +14,11 @@ interface CoverImageProps {
 }
 
 export const CoverImage = ({ initialData }: CoverImageProps) => {
-  const onChange = useCoverImage((state) => state.onOpen);
+  const onOpenCoverModal = useCoverImage((state) => state.onOpen);
 
   // Removes the cover image from the page.
   const onRemove = () => {
-    updatePage(initialData.id, {
-      coverImage: undefined,
-    });
+    updatePage(initialData.id, { coverImage: undefined });
   };
 
   return (
@@ -41,10 +39,10 @@ export const CoverImage = ({ initialData }: CoverImageProps) => {
       {!!initialData.coverImage && (
         <div className="absolute bottom-4 right-4 flex items-center gap-2 opacity-0 transition-all group-hover:opacity-100 group-focus-within:opacity-100">
           <Button
-            onClick={onChange}
+            onClick={onOpenCoverModal}
             variant="outline"
             size="sm"
-            className="text-xs text-muted-foreground cursor-pointer dark:bg-[#292929] dark:hover:bg-[#303030]"
+            className="cursor-pointer text-xs text-muted-foreground dark:bg-[#292929] dark:hover:bg-[#303030]"
           >
             <ImageUp className="h-4 w-4" />
             Change cover
@@ -53,7 +51,7 @@ export const CoverImage = ({ initialData }: CoverImageProps) => {
             onClick={onRemove}
             variant="outline"
             size="sm"
-            className="text-xs text-muted-foreground cursor-pointer dark:bg-[#292929] dark:hover:bg-[#303030]"
+            className="cursor-pointer text-xs text-muted-foreground dark:bg-[#292929] dark:hover:bg-[#303030]"
           >
             <X className="h-4 w-4" />
             Remove

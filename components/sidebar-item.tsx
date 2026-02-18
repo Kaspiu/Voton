@@ -15,18 +15,6 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
-import { useMoveTo } from "@/hooks/use-move-to";
-import { cn } from "@/lib/utils";
-import {
-  addFolder,
-  addPage,
-  deleteFolderWithChildren,
-  deletePage,
-  getFolder,
-  getPage,
-  updateFolder,
-  updatePage,
-} from "@/lib/database/documents";
 import { DeleteModal } from "@/components/modals/delete-modal";
 import {
   DropdownMenu,
@@ -41,6 +29,23 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useMoveTo } from "@/hooks/use-move-to";
+import {
+  addFolder,
+  addPage,
+  deleteFolderWithChildren,
+  deletePage,
+  getFolder,
+  getPage,
+  updateFolder,
+  updatePage,
+} from "@/lib/database/documents";
+import { cn } from "@/lib/utils";
+
+// Calculates the left margin for an item based on its nesting level.
+const calculateIndent = (expandLevel: number): string => {
+  return expandLevel ? `${expandLevel * 24 + 18}px` : "18px";
+};
 
 interface SidebarItemProps {
   id?: string;
@@ -79,9 +84,12 @@ export const SidebarItem = ({
   const [title, setTitle] = useState(label || "Untitled");
   const [isEditing, setIsEditing] = useState(false);
   const onMoveToOpen = useMoveTo((state) => state.onOpen);
+
+  // Prevents the dropdown from auto-focusing the trigger after rename input closes.
+  // Without this, closing the rename input would immediately re-focus the dropdown trigger button.
   const shouldBlockRestoreRef = useRef(false);
 
-  // Enables the input field for renaming the item.
+  // Enables inline editing mode, focuses the input, and selects all text.
   const enableInput = () => {
     shouldBlockRestoreRef.current = true;
     setTitle(label);
@@ -92,36 +100,34 @@ export const SidebarItem = ({
     }, 100);
   };
 
-  // Disables the input field.
+  // Disables inline editing mode.
   const disableInput = () => {
     setIsEditing(false);
     shouldBlockRestoreRef.current = false;
   };
 
-  // Handle title input change
+  // Updates the title in the database as the user types.
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(e.target.value);
     if (!id) return;
 
+    const newTitle =
+      e.target.value || (type === "folder" ? "New folder" : "Untitled");
     if (type === "folder") {
-      updateFolder(id, {
-        title: e.target.value || "Untitled",
-      });
+      updateFolder(id, { title: newTitle });
     } else {
-      updatePage(id, {
-        title: e.target.value || "Untitled",
-      });
+      updatePage(id, { title: newTitle });
     }
   };
 
-  // Confirm renaming on Enter key
+  // Exits editing mode when the user presses Enter.
   const onEnterKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       disableInput();
     }
   };
 
-  // Create a new child page
+  // Creates a new child page within this folder and navigates to it.
   const onCreatePage = () => {
     if (!id) return;
 
@@ -129,12 +135,8 @@ export const SidebarItem = ({
       title: "Untitled",
       parentFolder: id,
     }).then((page) => {
-      if (!isExpanded) {
-        onExpand?.();
-      }
-      if (page) {
-        router.push(`/documents/${page.id}`);
-      }
+      if (!isExpanded) onExpand?.();
+      if (page) router.push(`/documents/${page.id}`);
     });
 
     toast.promise(promise, {
@@ -144,7 +146,7 @@ export const SidebarItem = ({
     });
   };
 
-  // Create a new child folder
+  // Creates a new child folder within this folder.
   const onCreateFolder = () => {
     if (!id) return;
 
@@ -152,19 +154,17 @@ export const SidebarItem = ({
       title: "New folder",
       parentFolder: id,
     }).then(() => {
-      if (!isExpanded) {
-        onExpand?.();
-      }
+      if (!isExpanded) onExpand?.();
     });
 
     toast.promise(promise, {
-      loading: "Creating a new page...",
-      success: "New page created!",
-      error: "Failed to create a new page.",
+      loading: "Creating a new folder...",
+      success: "New folder created!",
+      error: "Failed to create a new folder.",
     });
   };
 
-  // Delete the current item and its children
+  // Deletes this item and its children, navigating away if currently viewing it or a child.
   const onDelete = async () => {
     if (!id) return;
 
@@ -192,30 +192,31 @@ export const SidebarItem = ({
       type === "folder" ? deleteFolderWithChildren(id) : deletePage(id);
 
     toast.promise(promise, {
-      loading: "Deleting page...",
-      success: "Page deleted!",
-      error: "Failed to delete page.",
+      loading: "Deleting...",
+      success: "Deleted!",
+      error: "Failed to delete.",
     });
 
     if (shouldRedirect) {
-      promise.then(() => router.push(`/documents`));
+      promise.then(() => router.push("/documents"));
     }
   };
+
+  const indentStyle =
+    type === "page" ? { marginLeft: calculateIndent(expandLevel) } : undefined;
 
   return (
     <div
       onClick={onClick}
       role="button"
       className={cn(
-        "group flex cursor-pointer items-center rounded-sm py-1 mx-1 text-sm font-medium transition-all hover:bg-muted-foreground/10",
+        "group mx-1 flex cursor-pointer items-center rounded-sm py-1 text-sm font-medium transition-all hover:bg-muted-foreground/10",
         isActive && "bg-muted-foreground/10 text-primary",
       )}
     >
       {!!id && type === "folder" && (
         <ChevronRight
-          style={{
-            marginLeft: expandLevel ? `${expandLevel * 24 + 18}px` : "18px",
-          }}
+          style={{ marginLeft: calculateIndent(expandLevel) }}
           className={cn(
             "h-4 w-4 shrink-0 transition-all",
             isExpanded && "rotate-90",
@@ -225,30 +226,16 @@ export const SidebarItem = ({
 
       {documentIcon ? (
         <div
-          style={{
-            marginLeft:
-              type === "page"
-                ? expandLevel
-                  ? `${expandLevel * 24 + 18}px`
-                  : "18px"
-                : undefined,
-          }}
-          className="shrink-0 mx-2"
+          style={indentStyle}
+          className="mr-2 flex items-center justify-center h-4 w-4 shrink-0"
         >
           {documentIcon}
         </div>
       ) : (
         <Icon
-          style={{
-            marginLeft:
-              type === "page"
-                ? expandLevel
-                  ? `${expandLevel * 24 + 18}px`
-                  : "18px"
-                : undefined,
-          }}
+          style={indentStyle}
           className={cn(
-            "mr-2 ml-4.5 h-4 w-4 shrink-0",
+            "ml-4.5 mr-2 h-4 w-4 shrink-0",
             !!id && "ml-2",
             type === "folder" && !!color && `text-${color}-500`,
           )}
@@ -265,7 +252,7 @@ export const SidebarItem = ({
           className="mr-2 w-full truncate bg-transparent focus:outline-none"
         />
       ) : (
-        <span className="truncate mr-2">{label}</span>
+        <span className="mr-2 truncate">{label}</span>
       )}
 
       {isSearch && (
@@ -278,7 +265,7 @@ export const SidebarItem = ({
         <div className="ml-auto mr-2 flex items-center justify-center gap-0.5">
           <DropdownMenu>
             <DropdownMenuTrigger onClick={(e) => e.stopPropagation()} asChild>
-              <button className="flex cursor-pointer items-center justify-center rounded-sm p-0.5 opacity-0 transition-all group-hover:opacity-100 hover:bg-muted-foreground/15 data-[state=open]:bg-muted-foreground/15 data-[state=open]:opacity-100 group-focus-within:opacity-100">
+              <button className="flex cursor-pointer items-center justify-center rounded-sm p-0.5 opacity-0 transition-all hover:bg-muted-foreground/15 group-hover:opacity-100 group-focus-within:opacity-100 data-[state=open]:bg-muted-foreground/15 data-[state=open]:opacity-100">
                 <Ellipsis className="h-4 w-4 shrink-0" />
               </button>
             </DropdownMenuTrigger>

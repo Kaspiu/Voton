@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
 
+// Returns true when the window has scrolled past the given threshold in pixels.
 export const useScrollNav = (threshold = 12) => {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > threshold);
-    };
+    const handleScroll = () => setScrolled(window.scrollY > threshold);
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);

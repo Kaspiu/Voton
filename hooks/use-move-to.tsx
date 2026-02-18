@@ -1,16 +1,16 @@
 import { create } from "zustand";
 
-type MoveToData = {
+interface MoveToData {
   id: string;
   type: "page" | "folder";
   parentId?: string;
-};
+}
 
-type MoveToStore = {
+interface MoveToStore {
   data?: MoveToData;
   onOpen: (data: MoveToData) => void;
   onClose: () => void;
-};
+}
 
 export const useMoveTo = create<MoveToStore>((set) => ({
   data: undefined,

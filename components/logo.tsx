@@ -3,6 +3,9 @@ import Image from "next/image";
 
 import { cn } from "@/lib/utils";
 
+const LOGO_SRC = "/logo.svg";
+const LOGO_SRC_DARK = "/logo-dark.svg";
+
 const textVariants = cva("font-bold", {
   variants: {
     size: {
@@ -14,6 +17,7 @@ const textVariants = cva("font-bold", {
     size: "default",
   },
 });
+
 const imageSizes = {
   default: 40,
   sm: 30,
@@ -31,18 +35,18 @@ export const Logo = ({ size, className }: LogoProps) => {
   return (
     <div className={cn("flex items-center justify-center", className)}>
       <Image
-        className="dark:hidden"
-        src="/logo.svg"
+        src={LOGO_SRC}
         width={imageSize}
         height={imageSize}
         alt="Logo"
+        className="dark:hidden"
       />
       <Image
-        className="hidden dark:block"
-        src="/logo-dark.svg"
+        src={LOGO_SRC_DARK}
         width={imageSize}
         height={imageSize}
         alt="Logo"
+        className="hidden dark:block"
       />
       <p className={cn(textVariants({ size: sizeKey }))}>Voton</p>
     </div>

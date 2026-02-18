@@ -1,10 +1,9 @@
-/* eslint-disable react-hooks/exhaustive-deps */
+// eslint-disable react-hooks/exhaustive-deps
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import { useParams, usePathname, useRouter } from "next/navigation";
-
+import Link from "next/link";
 import {
   ChevronRight,
   ChevronsLeft,
@@ -18,10 +17,6 @@ import {
 import { toast } from "sonner";
 import { useMediaQuery } from "usehooks-ts";
 
-import { useSearch } from "@/hooks/use-search";
-import { useSettings } from "@/hooks/use-settings";
-import { addFolder, addPage, getPage } from "@/lib/database/documents";
-import { cn } from "@/lib/utils";
 import { Logo } from "@/components/logo";
 import { SidebarItem } from "@/components/sidebar-item";
 import {
@@ -30,13 +25,22 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useSearch } from "@/hooks/use-search";
+import { useSettings } from "@/hooks/use-settings";
+import { addFolder, addPage, getPage } from "@/lib/database/documents";
+import { cn } from "@/lib/utils";
 
 import { DocumentsList } from "./documents-list";
 import { Navbar } from "./navbar";
 
+const DEFAULT_SIDEBAR_WIDTH = 288;
+const MIN_SIDEBAR_WIDTH = 288;
+const MAX_SIDEBAR_WIDTH = 448;
+
 const Navigation = () => {
   const pathName = usePathname();
   const params = useParams();
+  const documentId = params.documentId as string | undefined;
   const router = useRouter();
   const isMobile = useMediaQuery("(max-width: 1024px)");
   const onSearchOpen = useSearch((state) => state.onOpen);
@@ -50,7 +54,7 @@ const Navigation = () => {
   const [isResetting, setIsResetting] = useState(false);
   const [isDocumentFound, setIsDocumentFound] = useState(true);
 
-  // Collapses sidebar to zero width
+  // Collapses the sidebar to zero width and expands the navbar to full width.
   const collapseSidebar = () => {
     if (sidebarRef.current && navbarRef.current) {
       setIsCollapsed(true);
@@ -64,31 +68,37 @@ const Navigation = () => {
     }
   };
 
-  // Resets the sidebar to its default or mobile-specific width.
+  // Resets the sidebar to its default or saved width.
   const resetSidebarWidth = () => {
     if (sidebarRef.current && navbarRef.current) {
       setIsCollapsed(false);
       setIsResetting(true);
 
-      sidebarRef.current.style.width = isMobile ? "100%" : "288px";
-      navbarRef.current.style.left = isMobile ? "100%" : "288px";
-      navbarRef.current.style.width = isMobile ? "0" : "calc(100% - 288px)";
+      const width = isMobile ? "100%" : `${DEFAULT_SIDEBAR_WIDTH}px`;
+      const navLeft = isMobile ? "100%" : `${DEFAULT_SIDEBAR_WIDTH}px`;
+      const navWidth = isMobile
+        ? "0"
+        : `calc(100% - ${DEFAULT_SIDEBAR_WIDTH}px)`;
+
+      sidebarRef.current.style.width = width;
+      navbarRef.current.style.left = navLeft;
+      navbarRef.current.style.width = navWidth;
 
       if (!isMobile) {
-        localStorage.setItem("sidebar-width", "288");
+        localStorage.setItem("sidebar-width", String(DEFAULT_SIDEBAR_WIDTH));
       }
 
       setTimeout(() => setIsResetting(false), 300);
     }
   };
 
-  // Handles the mouse move event to resize the sidebar.
+  // Handles mouse movement during sidebar resize, clamping width between min and max.
   const handleMouseMove = (e: MouseEvent) => {
     if (!isResizing.current) return;
 
     let newWidth = e.clientX;
-    if (newWidth < 288) newWidth = 288;
-    if (newWidth > 448) newWidth = 448;
+    if (newWidth < MIN_SIDEBAR_WIDTH) newWidth = MIN_SIDEBAR_WIDTH;
+    if (newWidth > MAX_SIDEBAR_WIDTH) newWidth = MAX_SIDEBAR_WIDTH;
 
     if (sidebarRef.current && navbarRef.current) {
       sidebarRef.current.style.width = `${newWidth}px`;
@@ -97,7 +107,7 @@ const Navigation = () => {
     }
   };
 
-  // Handles the mouse up event to stop resizing the sidebar.
+  // Stops the resize operation and saves the final sidebar width to localStorage.
   const handleMouseUp = () => {
     isResizing.current = false;
     document.removeEventListener("mousemove", handleMouseMove);
@@ -111,7 +121,7 @@ const Navigation = () => {
     }
   };
 
-  // Handles the mouse down event to start resizing the sidebar.
+  // Initiates the sidebar resize operation.
   const handleSidebarResize = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -121,12 +131,10 @@ const Navigation = () => {
     document.addEventListener("mouseup", handleMouseUp);
   };
 
-  // Creates a new page and navigates to it.
+  // Creates a new untitled page and navigates to it.
   const onCreatePage = () => {
     const promise = addPage({ title: "Untitled" }).then((page) => {
-      if (page) {
-        router.push(`/documents/${page.id}`);
-      }
+      if (page) router.push(`/documents/${page.id}`);
     });
 
     toast.promise(promise, {
@@ -136,7 +144,7 @@ const Navigation = () => {
     });
   };
 
-  // Creates new folder
+  // Creates a new folder.
   const onCreateFolder = () => {
     const promise = addFolder({ title: "New folder" });
 
@@ -147,7 +155,7 @@ const Navigation = () => {
     });
   };
 
-  // Handles mobile responsiveness
+  // Restores saved sidebar width on desktop, collapses on mobile.
   useEffect(() => {
     if (isMobile) {
       collapseSidebar();
@@ -164,24 +172,24 @@ const Navigation = () => {
     }
   }, [isMobile]);
 
-  // Collapses mobile sidebar on route change
+  // Collapses sidebar on mobile when route changes.
   useEffect(() => {
     if (isMobile) {
       collapseSidebar();
     }
   }, [isMobile, pathName]);
 
-  // Checks if document exists
+  // Checks if the current document exists to determine navbar visibility.
   useEffect(() => {
     const checkDocument = async () => {
       setIsDocumentFound(true);
-      if (params.documentId) {
-        const page = await getPage(params.documentId as string);
+      if (documentId) {
+        const page = await getPage(documentId);
         setIsDocumentFound(!!page);
       }
     };
     checkDocument();
-  }, [params.documentId]);
+  }, [documentId]);
 
   return (
     <>
@@ -189,11 +197,11 @@ const Navigation = () => {
         ref={sidebarRef}
         className={cn(
           "sticky top-0 left-0 z-50 flex h-screen w-72 flex-col overflow-y-auto bg-secondary text-muted-foreground",
-          isResetting && "transition-all duration-300 ease-in-out",
+          isResetting && "transition-all duration-200 ease-in-out",
           isMobile && "w-0",
         )}
       >
-        <div className="flex items-center justify-between pt-4 pl-4 pr-3">
+        <div className="flex items-center justify-between pl-4 pr-3 pt-4">
           <Link href="/" className="shrink-0 select-none">
             <Logo size="sm" className="text-primary" />
           </Link>
@@ -206,7 +214,7 @@ const Navigation = () => {
           </div>
         </div>
 
-        <div className="flex flex-col w-full py-4">
+        <div className="flex w-full flex-col py-4">
           <SidebarItem
             onClick={onSearchOpen}
             icon={Search}
@@ -222,13 +230,13 @@ const Navigation = () => {
             <DropdownMenuTrigger asChild>
               <div
                 role="button"
-                className="group flex cursor-pointer items-center rounded-sm py-1 mx-1 text-sm font-medium transition-all hover:bg-muted-foreground/10 data-[state=open]:bg-muted-foreground/10"
+                className="group mx-1 flex cursor-pointer items-center rounded-sm py-1 text-sm font-medium transition-all hover:bg-muted-foreground/10 data-[state=open]:bg-muted-foreground/10"
               >
-                <CirclePlus className="mr-2 ml-4.5 h-4 w-4 shrink-0" />
+                <CirclePlus className="ml-4.5 mr-2 h-4 w-4 shrink-0" />
                 Add
                 <ChevronRight
                   className={cn(
-                    "h-4 w-4 shrink-0 ml-auto mr-2 transition-all",
+                    "ml-auto mr-2 h-4 w-4 shrink-0 transition-all",
                     isMobile && "group-data-[state=open]:rotate-90",
                   )}
                 />
@@ -252,7 +260,7 @@ const Navigation = () => {
           Workspace
         </p>
 
-        <div className="py-2 overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-secondary [&::-webkit-scrollbar-thumb]:bg-muted-foreground/15 [&::-webkit-scrollbar-thumb]:rounded-sm truncate">
+        <div className="truncate overflow-y-auto py-2 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-secondary [&::-webkit-scrollbar-thumb]:rounded-sm [&::-webkit-scrollbar-thumb]:bg-muted-foreground/15">
           <DocumentsList />
         </div>
 
@@ -266,12 +274,12 @@ const Navigation = () => {
       <div
         ref={navbarRef}
         className={cn(
-          "fixed top-0 left-60 z-50 w-[calc(100%_-_288px)]",
-          isResetting && "transition-all duration-300 ease-in-out",
+          "fixed top-0 left-60 z-50 w-[calc(100%-288px)]",
+          isResetting && "transition-all duration-200 ease-in-out",
           isMobile && "left-0 w-full",
         )}
       >
-        {!!params.documentId && isDocumentFound ? (
+        {documentId && isDocumentFound ? (
           <Navbar isCollapsed={isCollapsed} onResetWidth={resetSidebarWidth} />
         ) : (
           <nav className="w-full p-4 pt-6">

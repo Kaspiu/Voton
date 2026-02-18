@@ -4,7 +4,7 @@ import { Loader } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const spinnerVariants = cva(
-  "animate-spin flex items-center justify-center text-ring",
+  "flex animate-spin items-center justify-center text-ring",
   {
     variants: {
       size: {

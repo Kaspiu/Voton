@@ -1,10 +1,11 @@
-/* eslint-disable react-hooks/exhaustive-deps */
+// eslint-disable react-hooks/exhaustive-deps
 "use client";
 
 import { useEffect, useState } from "react";
+
+import { MoveToCommand } from "@/components/modals/move-to-command";
 import { SearchCommand } from "@/components/modals/search-command";
 import { SettingsModal } from "@/components/modals/settings-modal";
-import { MoveToCommand } from "@/components/modals/move-to-command";
 import { Spinner } from "@/components/spinner";
 import { Toaster } from "@/components/ui/sonner";
 import Navigation from "./_components/navigation";

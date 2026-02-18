@@ -23,9 +23,10 @@ import { cn } from "@/lib/utils";
 export const MoveToCommand = () => {
   const { data, onClose } = useMoveTo();
   const [folders, setFolders] = useState<Folder[]>([]);
+
   const isOpen = !!data;
 
-  // Fetches folders on mount and listens for folders changes.
+  // Fetches all folders and re-fetches whenever workspace items change or are deleted.
   useEffect(() => {
     const fetchFolders = async () => {
       try {
@@ -46,7 +47,7 @@ export const MoveToCommand = () => {
     };
   }, []);
 
-  // Handles moving the item to the selected folder.
+  // Moves the current item to the selected folder and closes the command palette.
   const onSelect = (folderId: string) => {
     if (!data) return;
 
@@ -59,7 +60,7 @@ export const MoveToCommand = () => {
     onClose();
   };
 
-  // Handles removing the item from its current folder.
+  // Removes the current item from its parent folder and closes the command palette.
   const onRemove = () => {
     if (!data) return;
 
@@ -72,7 +73,8 @@ export const MoveToCommand = () => {
     onClose();
   };
 
-  // Filters out folders to prevent circular references.
+  // Filters folders to exclude the item itself, its current parent, and any descendants
+  // (when moving a folder) to prevent circular folder references.
   const filteredFolders = data
     ? folders.filter((folder) => {
         if (folder.id === data.id) return false;

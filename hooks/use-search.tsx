@@ -1,11 +1,11 @@
 import { create } from "zustand";
 
-type SearchStore = {
+interface SearchStore {
   isOpen: boolean;
   onOpen: () => void;
   onClose: () => void;
   toggle: () => void;
-};
+}
 
 export const useSearch = create<SearchStore>((set, get) => ({
   isOpen: false,

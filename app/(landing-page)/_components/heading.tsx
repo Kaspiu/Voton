@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 
 const Heading = () => {
   return (
-    <div className="flex w-full flex-col items-center justify-center gap-4 pt-36 pb-24 max-lg:pb-12">
+    <div className="flex w-full flex-col items-center justify-center gap-4 pb-24 pt-36 max-lg:pb-12">
       <h1 className="max-w-1/2 text-center text-6xl font-bold max-lg:max-w-3/4 max-lg:text-4xl max-sm:max-w-9/10">
         Capture your brilliance.
       </h1>
@@ -14,20 +14,20 @@ const Heading = () => {
       </h3>
       <div className="flex items-center gap-4 max-sm:flex-col">
         <Button
-          className="group h-11 cursor-pointer text-base max-lg:h-10 max-lg:text-sm"
-          size="lg"
           asChild
+          size="lg"
+          className="group h-11 cursor-pointer text-base max-lg:h-10 max-lg:text-sm"
         >
           <Link href="/documents">
             Start thinking
-            <ArrowRight className="-rotate-45 transition-all duration-300 group-hover:rotate-0" />
+            <ArrowRight className="-rotate-45 transition-all duration-200 group-hover:rotate-0" />
           </Link>
         </Button>
         <Button
-          className="h-11 cursor-pointer text-base max-lg:h-10 max-lg:text-sm"
+          asChild
           size="lg"
           variant="outline"
-          asChild
+          className="h-11 cursor-pointer text-base max-lg:h-10 max-lg:text-sm"
         >
           <Link href="#features">Learn more</Link>
         </Button>

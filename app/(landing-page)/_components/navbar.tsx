@@ -1,12 +1,12 @@
 "use client";
 
-import Link from "next/link";
 import { Github, LogIn } from "lucide-react";
+import Link from "next/link";
 
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import { useScrollNav } from "@/hooks/use-scroll-nav";
+import { cn } from "@/lib/utils";
 
 const GithubButton = ({ className }: { className?: string }) => {
   return (
@@ -27,15 +27,15 @@ const Navbar = () => {
   const scrolled = useScrollNav();
 
   return (
-    <div
+    <nav
       className={cn(
-        "fixed top-0 z-50 flex w-full items-center justify-between bg-background p-6 text-primary transition-all duration-300 dark:bg-[#1F1F1F]",
-        scrolled && "shadow-md rounded-b-md py-3",
+        "fixed top-0 z-50 flex w-full items-center justify-between bg-background p-6 text-primary transition-all duration-200 dark:bg-[#1F1F1F]",
+        scrolled && "border-b py-3",
       )}
     >
       <GithubButton className="hidden max-sm:flex" />
 
-      <Link href="/" className="max-sm:hidden select-none">
+      <Link href="/" className="select-none max-sm:hidden">
         <Logo />
       </Link>
 
@@ -49,7 +49,7 @@ const Navbar = () => {
 
         <GithubButton className="max-sm:hidden" />
       </div>
-    </div>
+    </nav>
   );
 };
 

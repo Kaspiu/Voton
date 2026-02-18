@@ -5,28 +5,33 @@ import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 
+const ERROR_IMAGE_SRC = "/error.png";
+const ERROR_IMAGE_SRC_DARK = "/error-dark.png";
+const ERROR_IMAGE_WIDTH = 300;
+const ERROR_IMAGE_HEIGHT = 150;
+
 const NotFound = () => {
   return (
-    <div className="flex h-screen w-full shrink-0 flex-col items-center justify-center truncate text-center">
+    <div className="flex h-screen w-full flex-col items-center justify-center truncate text-center">
       <Image
+        src={ERROR_IMAGE_SRC}
+        width={ERROR_IMAGE_WIDTH}
+        height={ERROR_IMAGE_HEIGHT}
+        alt="Page not found illustration"
         className="dark:hidden"
-        src="/error.png"
-        width="300"
-        height="150"
-        alt="Logo"
       />
       <Image
+        src={ERROR_IMAGE_SRC_DARK}
+        width={ERROR_IMAGE_WIDTH}
+        height={ERROR_IMAGE_HEIGHT}
+        alt="Page not found illustration"
         className="hidden dark:block"
-        src="/error-dark.png"
-        width="300"
-        height="150"
-        alt="Logo"
       />
       <h1 className="text-2xl font-bold">Ooops!</h1>
       <h3 className="text-lg font-medium">
         Looks like you&apos;re in the wrong place.
       </h3>
-      <Button asChild className="mt-4 cursor-pointer" size="lg">
+      <Button asChild size="lg" className="mt-4 cursor-pointer">
         <Link href="/documents">Go back</Link>
       </Button>
     </div>
