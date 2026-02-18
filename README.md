@@ -1,6 +1,6 @@
 # Voton
 
-A privacy-focused note-taking web application inspired by Notion and Obsidian and built with Next.js. All your data stays in your browser—no servers, no accounts, no tracking.
+A privacy-focused note-taking web application inspired by Notion and Obsidian and built with Next.js. All your data stays in your browser - no servers, no accounts, no tracking.
 
 ## Features
 
@@ -15,7 +15,7 @@ A privacy-focused note-taking web application inspired by Notion and Obsidian an
 ## Tech Stack
 
 - **Next.js 16** - React 19 framework with TypeScript
-- **Tailwind CSS** - Utility-first styling
+- **Tailwind CSS 4** - Utility-first styling
 - **Shadcn UI** - Reusable component library
 - **IndexedDB** - Client-side storage via `idb`
 - **BlockNote** - Rich text block editor
