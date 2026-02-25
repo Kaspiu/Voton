@@ -16,7 +16,7 @@ const GithubButton = ({ className }: { className?: string }) => {
       variant="outline"
       className={cn("cursor-pointer", className)}
     >
-      <Link href="https://github.com/Kaspiu" target="_blank">
+      <Link href="https://github.com/Kaspiu/Voton" target="_blank">
         <Github className="h-5! w-5!" />
       </Link>
     </Button>

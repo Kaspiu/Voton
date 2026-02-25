@@ -1,5 +1,6 @@
 import { getDB } from "./database";
 import {
+  addPage,
   getAllFolders,
   getAllPages,
   notifyChanges,
@@ -7,8 +8,8 @@ import {
 } from "./documents";
 import { Folder, Page } from "./types";
 
-const EXPORT_VERSION = "0.2.4";
-const ACCEPTED_FILE_TYPES = ".json,application/json";
+const EXPORT_VERSION = "0.2.41";
+const ACCEPTED_FILE_TYPES = ".json,.md";
 
 export interface VotonExportData {
   version: string;
@@ -116,7 +117,7 @@ export async function exportData(): Promise<void> {
 }
 
 // Parses and validates a JSON file, then upserts all its pages and folders into the database.
-async function processImportFile(file: File): Promise<void> {
+async function processJsonFile(file: File): Promise<void> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
 
@@ -146,6 +147,33 @@ async function processImportFile(file: File): Promise<void> {
         await tx.done;
 
         notifyChanges();
+        resolve();
+      } catch (error) {
+        reject(error);
+      }
+    };
+
+    reader.onerror = () => reject(new Error("Failed to read file"));
+    reader.readAsText(file);
+  });
+}
+
+// Reads a Markdown file and creates a new page with the filename as title and file content as content.
+async function processMarkdownFile(file: File): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onload = async (e) => {
+      try {
+        const markdownContent = e.target?.result as string;
+
+        if (!markdownContent) {
+          throw new Error("File is empty or could not be read.");
+        }
+
+        const title = file.name.slice(0, file.name.lastIndexOf("."));
+
+        await addPage({ title, content: markdownContent });
         resolve();
       } catch (error) {
         reject(error);
@@ -195,13 +223,21 @@ export async function importData(): Promise<void> {
           return;
         }
 
-        if (!file.name.endsWith(".json")) {
-          reject(new Error("Invalid file format. Please select a .json file"));
+        if (file.name.endsWith(".json")) {
+          await processJsonFile(file);
+          resolve();
           return;
         }
 
-        await processImportFile(file);
-        resolve();
+        if (file.name.endsWith(".md")) {
+          await processMarkdownFile(file);
+          resolve();
+          return;
+        }
+
+        reject(
+          new Error("Invalid file format. Please select a .json or .md file"),
+        );
       } catch (error) {
         reject(error);
       }

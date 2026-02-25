@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useMemo } from "react";
 import { useTheme } from "next-themes";
 import {
   BlockNoteSchema,
@@ -67,14 +68,34 @@ interface EditorProps {
 export default function Editor({ onChange, initialData }: EditorProps) {
   const { resolvedTheme } = useTheme();
 
+  // Parses initialData as BlockNote JSON blocks, or returns undefined if absent or Markdown.
+  const initialContent = useMemo(() => {
+    if (!initialData) return undefined;
+    try {
+      return JSON.parse(initialData) as PartialBlock[];
+    } catch {
+      return undefined;
+    }
+  }, [initialData]);
+
   const editor = useCreateBlockNote({
     schema,
-    initialContent: initialData
-      ? (JSON.parse(initialData) as PartialBlock[])
-      : undefined,
+    initialContent,
     disableExtensions: ["dropFile"],
     uploadFile: handleUpload,
   });
+
+  // If initialData exists but could not be parsed as JSON, treat it as Markdown.
+  useEffect(() => {
+    if (!initialData || initialContent) return;
+
+    async function loadMarkdownContent() {
+      const blocks = await editor.tryParseMarkdownToBlocks(initialData!);
+      editor.replaceBlocks(editor.document, blocks);
+    }
+
+    loadMarkdownContent();
+  }, [editor, initialData, initialContent]);
 
   const onEditorChange = () => {
     onChange(JSON.stringify(editor.document, null, 2));

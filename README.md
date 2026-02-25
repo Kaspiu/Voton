@@ -9,7 +9,7 @@ A privacy-focused note-taking web application inspired by Notion and Obsidian an
 - **Rich text editing** - Block-based editor with tables, tasks, and markdown shortcuts
 - **Visual customization** - Cover images, emoji icons, and color-coded folders
 - **Dark mode** - Automatically adapts to your system preferences
-- **Data portability** - Export/import your entire workspace as JSON
+- **Data portability** - Export your entire workspace as JSON, import from JSON or Markdown
 - **Auto-save** - Changes saved instantly with automatic timestamps
 
 ## Tech Stack
