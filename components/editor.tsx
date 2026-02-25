@@ -52,7 +52,10 @@ const customCodeBlock = createCodeBlockSpec({
     yaml: { name: "YAML", aliases: ["yml"] },
     markdown: { name: "Markdown", aliases: ["md"] },
   },
-  createHighlighter: codeBlockOptions.createHighlighter,
+  // createHighlighter causes runtime errors.
+  // Likely due to a package version conflict with @blocknote/code-block.
+  // Re-enable when the dependency issue is resolved.
+  // createHighlighter: codeBlockOptions.createHighlighter,
 });
 
 // Schema combining preserved default blocks with the custom code block.
