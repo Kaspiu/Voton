@@ -201,7 +201,7 @@ const Navigation = () => {
           isMobile && "w-0",
         )}
       >
-        <div className="flex items-center justify-between pl-4 pr-3 pt-4">
+        <div className="flex items-center justify-between px-3 pt-4">
           <Link href="/" className="shrink-0 select-none">
             <Logo size="sm" className="text-primary" />
           </Link>
@@ -232,8 +232,8 @@ const Navigation = () => {
                 role="button"
                 className="group mx-1 flex cursor-pointer items-center rounded-sm py-1 text-sm font-medium transition-all hover:bg-muted-foreground/10 data-[state=open]:bg-muted-foreground/10"
               >
-                <CirclePlus className="ml-4.5 mr-2 h-4 w-4 shrink-0" />
-                Add
+                <CirclePlus className="ml-3.5 mr-2 h-4 w-4 shrink-0" />
+                <span className="mr-2 truncate">Add</span>
                 <ChevronRight
                   className={cn(
                     "ml-auto mr-2 h-4 w-4 shrink-0 transition-all",
@@ -256,7 +256,7 @@ const Navigation = () => {
           </DropdownMenu>
         </div>
 
-        <p className="pl-5.5 pr-3 text-xs font-bold text-muted-foreground/50">
+        <p className="pl-4.5 pr-3 text-xs font-bold text-muted-foreground/50">
           Workspace
         </p>
 

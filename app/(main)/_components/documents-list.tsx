@@ -56,7 +56,7 @@ export const DocumentsList = ({
   const params = useParams();
   const router = useRouter();
 
-  const paddingLeft = expandLevel ? `${expandLevel * 24 + 22}px` : "22px";
+  const paddingLeft = expandLevel ? `${expandLevel * 24 + 18}px` : "18px";
 
   const [documents, setDocuments] = useState<DocumentItem[] | undefined>(
     undefined,

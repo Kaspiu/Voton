@@ -44,7 +44,7 @@ import { cn } from "@/lib/utils";
 
 // Calculates the left margin for an item based on its nesting level.
 const calculateIndent = (expandLevel: number): string => {
-  return expandLevel ? `${expandLevel * 24 + 18}px` : "18px";
+  return expandLevel ? `${expandLevel * 24 + 14}px` : "14px";
 };
 
 interface SidebarItemProps {
@@ -235,8 +235,7 @@ export const SidebarItem = ({
         <Icon
           style={indentStyle}
           className={cn(
-            "ml-4.5 mr-2 h-4 w-4 shrink-0",
-            !!id && "ml-2",
+            "mx-2 h-4 w-4 shrink-0",
             type === "folder" && !!color && `text-${color}-500`,
           )}
         />
@@ -262,7 +261,7 @@ export const SidebarItem = ({
       )}
 
       {!!id && (
-        <div className="ml-auto mr-2 flex items-center justify-center gap-0.5">
+        <div className="ml-auto mr-2">
           <DropdownMenu>
             <DropdownMenuTrigger onClick={(e) => e.stopPropagation()} asChild>
               <button className="flex cursor-pointer items-center justify-center rounded-sm p-0.5 opacity-0 transition-all hover:bg-muted-foreground/15 group-hover:opacity-100 group-focus-within:opacity-100 data-[state=open]:bg-muted-foreground/15 data-[state=open]:opacity-100">
