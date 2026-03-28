@@ -135,15 +135,35 @@ async function processJsonFile(file: File): Promise<void> {
           throw new Error("Invalid export file format");
         }
 
+        const existingPages = await getAllPages();
+        const existingPagesMap = new Map(existingPages.map((p) => [p.id, p]));
+
         const db = await getDB();
         const tx = db.transaction(["pages", "folders"], "readwrite");
 
         await Promise.all([
-          ...votonData.pages.map((page) => tx.objectStore("pages").put(page)),
+          ...votonData.pages.map((page) => {
+            const existing = existingPagesMap.get(page.id);
+
+            if (!existing) {
+              return tx.objectStore("pages").put(page);
+            }
+
+            if (
+              page.updatedAt &&
+              existing.updatedAt &&
+              page.updatedAt > existing.updatedAt
+            ) {
+              return tx.objectStore("pages").put(page);
+            }
+
+            return Promise.resolve();
+          }),
           ...votonData.folders.map((folder) =>
             tx.objectStore("folders").put(folder),
           ),
         ]);
+
         await tx.done;
 
         notifyChanges();

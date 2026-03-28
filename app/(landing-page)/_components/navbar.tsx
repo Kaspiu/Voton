@@ -1,6 +1,7 @@
 "use client";
 
-import { Github, LogIn } from "lucide-react";
+import { SiGithub } from "@icons-pack/react-simple-icons";
+import { LogIn } from "lucide-react";
 import Link from "next/link";
 
 import { Logo } from "@/components/logo";
@@ -17,7 +18,7 @@ const GithubButton = ({ className }: { className?: string }) => {
       className={cn("cursor-pointer", className)}
     >
       <Link href="https://github.com/Kaspiu/Voton" target="_blank">
-        <Github className="h-5! w-5!" />
+        <SiGithub className="h-5! w-5!" />
       </Link>
     </Button>
   );
