@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useSearch } from "@/hooks/use-search";
 import { useSettings } from "@/hooks/use-settings";
+import { useSidebar } from "@/hooks/use-sidebar";
 import { addFolder, addPage, getPage } from "@/lib/database/documents";
 import { cn } from "@/lib/utils";
 
@@ -45,19 +46,21 @@ const Navigation = () => {
   const isMobile = useMediaQuery("(max-width: 1024px)");
   const onSearchOpen = useSearch((state) => state.onOpen);
   const onSettingsOpen = useSettings((state) => state.onOpen);
+  const isCollapsed = useSidebar((state) => state.isCollapsed);
+  const onCollapse = useSidebar((state) => state.onCollapse);
+  const onExpand = useSidebar((state) => state.onExpand);
 
   const isResizing = useRef(false);
   const sidebarRef = useRef<HTMLElement>(null);
   const navbarRef = useRef<HTMLDivElement>(null);
 
-  const [isCollapsed, setIsCollapsed] = useState(isMobile);
   const [isResetting, setIsResetting] = useState(false);
   const [isDocumentFound, setIsDocumentFound] = useState(true);
 
   // Collapses the sidebar to zero width and expands the navbar to full width.
   const collapseSidebar = () => {
     if (sidebarRef.current && navbarRef.current) {
-      setIsCollapsed(true);
+      onCollapse();
       setIsResetting(true);
 
       sidebarRef.current.style.width = "0";
@@ -71,7 +74,7 @@ const Navigation = () => {
   // Resets the sidebar to its default or saved width.
   const resetSidebarWidth = () => {
     if (sidebarRef.current && navbarRef.current) {
-      setIsCollapsed(false);
+      onExpand();
       setIsResetting(true);
 
       const width = isMobile ? "100%" : `${DEFAULT_SIDEBAR_WIDTH}px`;
@@ -162,7 +165,7 @@ const Navigation = () => {
     } else {
       const savedWidth = localStorage.getItem("sidebar-width");
       if (savedWidth && sidebarRef.current && navbarRef.current) {
-        setIsCollapsed(false);
+        onExpand();
         sidebarRef.current.style.width = `${savedWidth}px`;
         navbarRef.current.style.left = `${savedWidth}px`;
         navbarRef.current.style.width = `calc(100% - ${savedWidth}px)`;
@@ -196,8 +199,8 @@ const Navigation = () => {
       <aside
         ref={sidebarRef}
         className={cn(
-          "sticky top-0 left-0 z-50 flex h-screen w-72 flex-col overflow-y-auto bg-secondary text-muted-foreground",
-          isResetting && "transition-all duration-200 ease-in-out",
+          "group/aside sticky top-0 left-0 z-50 flex h-screen w-72 flex-col overflow-y-auto bg-secondary text-muted-foreground",
+          isResetting && "transition-all duration-200",
           isMobile && "w-0",
         )}
       >
@@ -267,7 +270,7 @@ const Navigation = () => {
         <div
           onClick={!isMobile ? resetSidebarWidth : undefined}
           onMouseDown={!isMobile ? handleSidebarResize : undefined}
-          className="absolute top-0 right-0 h-full w-[3px] cursor-ew-resize bg-muted-foreground/10 opacity-0 transition-all hover:opacity-100"
+          className="absolute top-0 right-0 h-full w-[3px] cursor-ew-resize bg-muted-foreground/10 opacity-0 transition-all group-hover/aside:opacity-100"
         />
       </aside>
 
@@ -275,7 +278,7 @@ const Navigation = () => {
         ref={navbarRef}
         className={cn(
           "fixed top-0 left-60 z-50 w-[calc(100%-288px)]",
-          isResetting && "transition-all duration-200 ease-in-out",
+          isResetting && "transition-all duration-200",
           isMobile && "left-0 w-full",
         )}
       >

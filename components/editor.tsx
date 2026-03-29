@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo } from "react";
 import { useTheme } from "next-themes";
+
 import {
   BlockNoteSchema,
   defaultBlockSpecs,
@@ -11,6 +12,8 @@ import {
 import { BlockNoteView } from "@blocknote/mantine";
 import { useCreateBlockNote } from "@blocknote/react";
 import { codeBlockOptions } from "@blocknote/code-block";
+import { useSidebar } from "@/hooks/use-sidebar";
+import { cn } from "@/lib/utils";
 
 import "@blocknote/core/fonts/inter.css";
 import "@blocknote/mantine/style.css";
@@ -67,6 +70,7 @@ interface EditorProps {
 
 export default function Editor({ onChange, initialData }: EditorProps) {
   const { resolvedTheme } = useTheme();
+  const isCollapsed = useSidebar((state) => state.isCollapsed);
 
   // Parses initialData as BlockNote JSON blocks, or returns undefined if absent or Markdown.
   const initialContent = useMemo(() => {
@@ -107,7 +111,10 @@ export default function Editor({ onChange, initialData }: EditorProps) {
         editor={editor}
         onChange={onEditorChange}
         theme={resolvedTheme === "light" ? "light" : "dark"}
-        className="px-2.5 max-lg:px-0"
+        className={cn(
+          "px-7.5 max-lg:px-0 transition-all duration-200",
+          isCollapsed && "px-29.5",
+        )}
       />
     </div>
   );

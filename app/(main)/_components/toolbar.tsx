@@ -6,6 +6,7 @@ import { ImagePlus, SmilePlus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { EmojiPickerPopover } from "@/components/emoji-picker";
 import { useCoverImage } from "@/hooks/use-cover-image";
+import { useSidebar } from "@/hooks/use-sidebar";
 import { updatePage } from "@/lib/database/documents";
 import { Page } from "@/lib/database/types";
 import { cn } from "@/lib/utils";
@@ -20,6 +21,7 @@ export const Toolbar = ({ initialData }: ToolbarProps) => {
   const [title, setTitle] = useState(initialData.title || "Untitled");
 
   const onCoverImageOpen = useCoverImage((state) => state.onOpen);
+  const isCollapsed = useSidebar((state) => state.isCollapsed);
 
   // Enables title editing mode, focuses the input, and selects all text.
   const enableInput = () => {
@@ -62,7 +64,12 @@ export const Toolbar = ({ initialData }: ToolbarProps) => {
   };
 
   return (
-    <div className="group mb-12 mt-6 flex flex-col justify-center px-16 max-lg:px-13.5">
+    <div
+      className={cn(
+        "group mb-12 mt-6 flex flex-col justify-center px-21 max-lg:px-13.5 transition-all duration-200",
+        isCollapsed && "px-42",
+      )}
+    >
       <div
         className={cn(
           "mb-2 flex w-fit items-center gap-2 opacity-0 transition-all group-hover:opacity-100 group-focus-within:opacity-100",

@@ -1,9 +1,9 @@
 "use client";
 
-import { SiGithub } from "@icons-pack/react-simple-icons";
 import { LogIn } from "lucide-react";
 import Link from "next/link";
 
+import { SiGithub } from "@icons-pack/react-simple-icons";
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import { useScrollNav } from "@/hooks/use-scroll-nav";
