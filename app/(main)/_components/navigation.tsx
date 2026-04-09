@@ -199,7 +199,7 @@ const Navigation = () => {
       <aside
         ref={sidebarRef}
         className={cn(
-          "group/aside sticky top-0 left-0 z-50 flex h-screen w-72 flex-col overflow-y-auto bg-secondary text-muted-foreground",
+          "group/aside relative z-50 flex h-screen w-72 flex-col overflow-x-hidden overflow-y-auto bg-secondary text-muted-foreground",
           isResetting && "transition-all duration-200",
           isMobile && "w-0",
         )}
@@ -263,7 +263,7 @@ const Navigation = () => {
           Workspace
         </p>
 
-        <div className="truncate overflow-y-auto py-2 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-secondary [&::-webkit-scrollbar-thumb]:rounded-sm [&::-webkit-scrollbar-thumb]:bg-muted-foreground/15">
+        <div className="truncate overflow-y-auto mt-2 pb-2 doc-list-scroll">
           <DocumentsList />
         </div>
 

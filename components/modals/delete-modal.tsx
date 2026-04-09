@@ -15,9 +15,14 @@ import {
 interface DeleteModalProps {
   children: React.ReactNode;
   onDelete: () => void;
+  isFolder?: boolean;
 }
 
-export const DeleteModal = ({ children, onDelete }: DeleteModalProps) => {
+export const DeleteModal = ({
+  children,
+  onDelete,
+  isFolder,
+}: DeleteModalProps) => {
   return (
     <AlertDialog>
       <AlertDialogTrigger onClick={(e) => e.stopPropagation()} asChild>
@@ -28,8 +33,8 @@ export const DeleteModal = ({ children, onDelete }: DeleteModalProps) => {
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete this page
-            and all subpages.
+            This action cannot be undone. This will permanently delete this{" "}
+            {isFolder ? "folder and all subitems" : "page"}.
           </AlertDialogDescription>
         </AlertDialogHeader>
 

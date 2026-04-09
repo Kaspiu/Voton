@@ -383,7 +383,7 @@ export const SidebarItem = ({
 
               <DropdownMenuSeparator />
 
-              <DeleteModal onDelete={onDelete}>
+              <DeleteModal onDelete={onDelete} isFolder={type === "folder"}>
                 <DropdownMenuItem
                   onSelect={(e) => e.preventDefault()}
                   variant="destructive"
