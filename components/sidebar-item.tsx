@@ -11,6 +11,8 @@ import {
   LucideIcon,
   Palette,
   Pen,
+  Pin,
+  PinOff,
   Trash,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -56,6 +58,8 @@ interface SidebarItemProps {
   onExpand?: () => void;
   isExpanded?: boolean;
   expandLevel?: number;
+  isPinned?: boolean;
+  onPin?: () => void;
   onClick: () => void;
   icon: LucideIcon;
   label: string;
@@ -72,6 +76,8 @@ export const SidebarItem = ({
   onExpand,
   isExpanded,
   expandLevel = 0,
+  isPinned,
+  onPin,
   onClick,
   icon: Icon,
   label,
@@ -256,6 +262,10 @@ export const SidebarItem = ({
         <span className="mr-2 truncate">{label}</span>
       )}
 
+      {isPinned && (
+        <Pin className="mr-2 h-3 w-3 shrink-0 rotate-45 text-muted-foreground/50" />
+      )}
+
       {isSearch && (
         <kbd className="flex items-center justify-center gap-1 h-5 ml-auto mr-2 px-2 text-xs font-medium font-mono border border-muted-foreground/10 bg-secondary rounded-sm pointer-events-none select-none">
           {isMac ? "⌘ + K" : "Ctrl + K"}
@@ -377,6 +387,22 @@ export const SidebarItem = ({
                 <CornerUpRight className="h-4 w-4 shrink-0" />
                 Move to
               </DropdownMenuItem>
+
+              {onPin && (
+                <DropdownMenuItem onSelect={onPin}>
+                  {isPinned ? (
+                    <>
+                      <PinOff className="h-4 w-4 shrink-0" />
+                      Unpin
+                    </>
+                  ) : (
+                    <>
+                      <Pin className="h-4 w-4 shrink-0" />
+                      Pin to top
+                    </>
+                  )}
+                </DropdownMenuItem>
+              )}
 
               <DropdownMenuItem onSelect={enableInput}>
                 <Pen className="h-4 w-4 shrink-0" />

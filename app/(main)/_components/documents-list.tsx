@@ -34,13 +34,45 @@ const saveExpandedState = (id: string, isExpanded: boolean): void => {
     const currentState = JSON.parse(
       localStorage.getItem("sidebar-expanded-folders") || "{}",
     );
-    currentState[id] = isExpanded;
+    if (isExpanded) {
+      currentState[id] = true;
+    } else {
+      delete currentState[id];
+    }
     localStorage.setItem(
       "sidebar-expanded-folders",
       JSON.stringify(currentState),
     );
   } catch (error) {
     console.error("Failed to save sidebar state:", error);
+  }
+};
+
+// Loads the pinned state of items from localStorage, returning an empty object on error.
+const loadPinnedState = (): Record<string, boolean> => {
+  try {
+    if (typeof window === "undefined") return {};
+    return JSON.parse(localStorage.getItem("sidebar-pinned-items") || "{}");
+  } catch (error) {
+    console.error("Failed to load pinned state:", error);
+    return {};
+  }
+};
+
+// Saves the pinned state of a specific item to localStorage.
+const savePinnedState = (id: string, isPinned: boolean): void => {
+  try {
+    const currentState = JSON.parse(
+      localStorage.getItem("sidebar-pinned-items") || "{}",
+    );
+    if (isPinned) {
+      currentState[id] = true;
+    } else {
+      delete currentState[id];
+    }
+    localStorage.setItem("sidebar-pinned-items", JSON.stringify(currentState));
+  } catch (error) {
+    console.error("Failed to save pinned state:", error);
   }
 };
 
@@ -63,12 +95,23 @@ export const DocumentsList = ({
   );
   const [isExpanded, setIsExpanded] =
     useState<Record<string, boolean>>(loadExpandedState);
+  const [pinned, setPinned] =
+    useState<Record<string, boolean>>(loadPinnedState);
 
   // Toggles the expansion state of a folder in both state and localStorage.
   const onExpand = (id: string) => {
     setIsExpanded((prev) => {
       const newValue = !prev[id];
       saveExpandedState(id, newValue);
+      return { ...prev, [id]: newValue };
+    });
+  };
+
+  // Toggles the pinned state of an item, persisting it to localStorage.
+  const onPin = (id: string) => {
+    setPinned((prev) => {
+      const newValue = !prev[id];
+      savePinnedState(id, newValue);
       return { ...prev, [id]: newValue };
     });
   };
@@ -138,6 +181,15 @@ export const DocumentsList = ({
     );
   }
 
+  // Pinning is only available and sorted at the root level.
+  const sortedDocuments =
+    expandLevel === 0
+      ? [
+          ...documents.filter((doc) => pinned[doc.id]),
+          ...documents.filter((doc) => !pinned[doc.id]),
+        ]
+      : documents;
+
   return (
     <>
       <p
@@ -151,7 +203,7 @@ export const DocumentsList = ({
         No documents inside
       </p>
 
-      {documents.map((doc) => (
+      {sortedDocuments.map((doc) => (
         <div key={doc.id}>
           <SidebarItem
             id={doc.id}
@@ -163,6 +215,8 @@ export const DocumentsList = ({
             isActive={params.documentId === doc.id}
             isExpanded={isExpanded[doc.id]}
             expandLevel={expandLevel}
+            isPinned={expandLevel === 0 ? !!pinned[doc.id] : undefined}
+            onPin={expandLevel === 0 ? () => onPin(doc.id) : undefined}
             onClick={
               doc.type === "page"
                 ? () => onRedirect(doc.id)
