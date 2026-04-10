@@ -18,7 +18,7 @@ const FIRST_ROW_FEATURES: FeatureCardProps[] = [
     icon: FolderTree,
     title: "Infinite organization",
     description:
-      "Create unlimited folders and pages with infinite nesting. Build hierarchies as simple or complex as your mind demands.",
+      "Create unlimited folders and pages with infinite nesting. Pin key items to the top for instant access and build hierarchies as simple or complex as your mind demands.",
   },
   {
     icon: Palette,

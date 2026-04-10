@@ -6,6 +6,7 @@ A privacy-focused note-taking web application inspired by Notion and Obsidian an
 
 - **Local-first** - All data stored in your browser using IndexedDB
 - **Hierarchical organization** - Unlimited nested folders and pages
+- **Quick access** - Pin important pages and folders to the sidebar for instant navigation
 - **Rich text editing** - Block-based editor with tables, tasks, and markdown shortcuts
 - **Visual customization** - Cover images, emoji icons, and color-coded folders
 - **Dark mode** - Automatically adapts to your system preferences
