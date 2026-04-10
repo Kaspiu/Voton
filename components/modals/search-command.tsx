@@ -47,6 +47,7 @@ export const SearchCommand = () => {
   // Registers the Ctrl/Cmd+K keyboard shortcut to open or close the search palette.
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.repeat) return;
       if (e.key === SEARCH_SHORTCUT_KEY && (e.ctrlKey || e.metaKey)) {
         e.preventDefault();
         toggle();

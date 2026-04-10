@@ -127,8 +127,7 @@
     @apply scroll-smooth;
   }
   .com-list-scroll,
-  .doc-list-scroll,
-  .layout-scroll {
+  .doc-list-scroll {
     &::-webkit-scrollbar-track,
     &::-webkit-scrollbar-corner {
       @apply bg-transparent;
@@ -145,19 +144,10 @@
     }
   }
 
-  .layout-scroll {
-    &::-webkit-scrollbar {
-      @apply w-2.5;
-    }
-  }
-
   .com-list-scroll::-webkit-scrollbar-thumb {
     @apply bg-muted-foreground/20 hover:bg-muted-foreground/30;
   }
   .doc-list-scroll::-webkit-scrollbar-thumb {
     @apply bg-muted-foreground/10 hover:bg-muted-foreground/20;
-  }
-  .layout-scroll::-webkit-scrollbar-thumb {
-    @apply bg-muted-foreground/30 hover:bg-muted-foreground/40;
   }
 }

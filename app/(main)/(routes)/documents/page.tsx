@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { useIsMac } from "@/hooks/use-is-mac";
 import { addPage } from "@/lib/database/documents";
 
 const LOGO_SRC = "/logo.svg";
@@ -14,6 +15,7 @@ const LOGO_SIZE = 100;
 
 const DocumentsPage = () => {
   const router = useRouter();
+  const isMac = useIsMac();
 
   // Creates a new untitled page, navigates to it on success, and shows a toast for each state.
   const onCreate = () => {
@@ -48,10 +50,26 @@ const DocumentsPage = () => {
       <h1 className="text-2xl font-bold">Welcome to Voton!</h1>
       <h3 className="text-lg font-medium">What&apos;s on your mind today?</h3>
 
-      <Button onClick={onCreate} size="lg" className="mt-4 cursor-pointer">
+      <Button onClick={onCreate} size="lg" className="mt-4 mb-6 cursor-pointer">
         <CirclePlus />
         Create a page
       </Button>
+
+      <div className="flex flex-col items-center gap-2 text-xs font-medium text-muted-foreground pointer-events-none select-none">
+        <div className="flex items-center gap-2">
+          <span>Toggle sidebar</span>
+          <kbd className="flex items-center px-2 font-mono border bg-secondary rounded-sm">
+            {isMac ? "⌘ + \\" : "Ctrl + \\"}
+          </kbd>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <span>Create new page</span>
+          <kbd className="flex items-center px-2 font-mono border bg-secondary rounded-sm">
+            {isMac ? "⌘ + ⌥ + P" : "Ctrl + Alt + P"}
+          </kbd>
+        </div>
+      </div>
     </div>
   );
 };

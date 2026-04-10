@@ -38,6 +38,9 @@ const DEFAULT_SIDEBAR_WIDTH = 288;
 const MIN_SIDEBAR_WIDTH = 288;
 const MAX_SIDEBAR_WIDTH = 448;
 
+const SIDEBAR_TOGGLE_KEY = "\\";
+const NEW_PAGE_KEY = "p";
+
 const Navigation = () => {
   const pathName = usePathname();
   const params = useParams();
@@ -193,6 +196,29 @@ const Navigation = () => {
     };
     checkDocument();
   }, [documentId]);
+
+  // Register global keyboard shortcuts for sidebar toggle and new page creation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.repeat) return;
+
+      if (e.key === SIDEBAR_TOGGLE_KEY && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        if (isCollapsed) {
+          resetSidebarWidth();
+        } else {
+          collapseSidebar();
+        }
+      }
+      if (e.key === NEW_PAGE_KEY && (e.ctrlKey || e.metaKey) && e.altKey) {
+        e.preventDefault();
+        onCreatePage();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isCollapsed]);
 
   return (
     <>

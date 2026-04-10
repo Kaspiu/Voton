@@ -29,6 +29,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useIsMac } from "@/hooks/use-is-mac";
 import { useMoveTo } from "@/hooks/use-move-to";
 import {
   addFolder,
@@ -83,6 +84,7 @@ export const SidebarItem = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const [title, setTitle] = useState(label || "Untitled");
   const [isEditing, setIsEditing] = useState(false);
+  const isMac = useIsMac();
   const onMoveToOpen = useMoveTo((state) => state.onOpen);
 
   // Prevents the dropdown from auto-focusing the trigger after rename input closes.
@@ -227,7 +229,7 @@ export const SidebarItem = ({
       {documentIcon ? (
         <div
           style={indentStyle}
-          className="mr-2 flex items-center justify-center h-4 w-4 shrink-0"
+          className="mr-2 flex h-4 w-4 shrink-0 items-center justify-center"
         >
           {documentIcon}
         </div>
@@ -255,8 +257,8 @@ export const SidebarItem = ({
       )}
 
       {isSearch && (
-        <kbd className="pointer-events-none ml-auto mr-2 flex h-5 select-none items-center justify-center gap-1 rounded-sm border border-muted-foreground/10 bg-secondary px-2 text-xs font-medium">
-          <span>Ctrl</span>K
+        <kbd className="flex items-center justify-center gap-1 h-5 ml-auto mr-2 px-2 text-xs font-medium font-mono border border-muted-foreground/10 bg-secondary rounded-sm pointer-events-none select-none">
+          {isMac ? "⌘ + K" : "Ctrl + K"}
         </kbd>
       )}
 
