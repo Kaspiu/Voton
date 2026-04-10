@@ -22,8 +22,8 @@ const MS_PER_DAY = 24 * MS_PER_HOUR;
 const MS_PER_MONTH = 30 * MS_PER_DAY;
 const MS_PER_YEAR = 365 * MS_PER_DAY;
 
-// Formats a timestamp into a relative time string.
-const formatTimeAgo = (timestamp: number): string => {
+// Returns a relative time label, e.g. "Edited 3h ago"
+const formatRelativeTime = (timestamp: number): string => {
   const diff = Date.now() - timestamp;
   const minutes = Math.floor(diff / MS_PER_MINUTE);
 
@@ -43,6 +43,16 @@ const formatTimeAgo = (timestamp: number): string => {
   return `Edited ${years}y ago`;
 };
 
+// Returns a short date string, e.g. "Apr 12, 2024"
+const formatDate = (timestamp: number): string => {
+  const date = new Date(timestamp);
+  const day = date.getDate();
+  const month = date.toLocaleString("en-US", { month: "short" });
+  const year = date.getFullYear();
+
+  return `Created on ${month} ${day}, ${year}`;
+};
+
 interface NavbarProps {
   isCollapsed: boolean;
   onResetWidth: () => void;
@@ -54,15 +64,35 @@ export const Navbar = ({ isCollapsed, onResetWidth }: NavbarProps) => {
   const documentId = params.documentId as string;
 
   const [title, setTitle] = useState<string | undefined>(undefined);
+  const [createdAt, setCreatedAt] = useState<number>();
   const [updatedAt, setUpdatedAt] = useState<number>();
-  const [formattedTime, setFormattedTime] = useState("");
 
-  // Navigates back to the main documents page.
+  const formattedCreatedAt = createdAt ? formatDate(createdAt) : "";
+  const formattedUpdatedAt = updatedAt ? formatRelativeTime(updatedAt) : "";
+
+  // Keeps navbar metadata in sync with external document updates
+  useEffect(() => {
+    const fetchPage = async () => {
+      if (!documentId) return;
+
+      const page = await getPage(documentId);
+      if (page) {
+        setTitle(page.title);
+        setCreatedAt(page.createdAt);
+        setUpdatedAt(page.updatedAt);
+      }
+    };
+
+    fetchPage();
+
+    window.addEventListener("item-changed", fetchPage);
+    return () => window.removeEventListener("item-changed", fetchPage);
+  }, [documentId]);
+
   const onClose = () => {
     router.push("/documents");
   };
 
-  // Deletes the current page and navigates back to the documents list.
   const onDelete = () => {
     if (!documentId) return;
 
@@ -76,25 +106,6 @@ export const Navbar = ({ isCollapsed, onResetWidth }: NavbarProps) => {
 
     promise.then(() => router.push("/documents"));
   };
-
-  // Fetches the page data and re-fetches whenever the page is updated externally.
-  useEffect(() => {
-    const fetchPage = async () => {
-      if (!documentId) return;
-
-      const page = await getPage(documentId);
-      if (page) {
-        setTitle(page.title);
-        setUpdatedAt(page.updatedAt);
-        setFormattedTime(page.updatedAt ? formatTimeAgo(page.updatedAt) : "");
-      }
-    };
-
-    fetchPage();
-
-    window.addEventListener("item-changed", fetchPage);
-    return () => window.removeEventListener("item-changed", fetchPage);
-  }, [documentId]);
 
   return (
     <nav className="flex w-full items-center gap-4 bg-background p-4 dark:bg-[#1F1F1F]">
@@ -133,9 +144,12 @@ export const Navbar = ({ isCollapsed, onResetWidth }: NavbarProps) => {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent
                     side="bottom"
-                    className="flex items-center justify-center text-sm font-medium text-muted-foreground"
+                    className="flex flex-col items-center gap-0.5 text-xs font-medium text-muted-foreground"
                   >
-                    <span className="px-2 py-1.5">{formattedTime}</span>
+                    <span className="px-2 pt-1">{formattedUpdatedAt}</span>
+                    <span className="px-2 pb-1 text-muted-foreground/75">
+                      {formattedCreatedAt}
+                    </span>
                   </DropdownMenuContent>
                 </DropdownMenu>
               )}

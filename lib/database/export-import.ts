@@ -8,7 +8,7 @@ import {
 } from "./documents";
 import { Folder, Page } from "./types";
 
-const EXPORT_VERSION = "0.2.46";
+const EXPORT_VERSION = "0.2.5";
 const ACCEPTED_FILE_TYPES = ".json,.md";
 
 export interface VotonExportData {
@@ -27,7 +27,7 @@ const OPTIONAL_PAGE_PROPS: (keyof Page)[] = [
 
 const OPTIONAL_FOLDER_PROPS: (keyof Folder)[] = ["parentFolder", "color"];
 
-// Returns true if every optional string prop on a page is either absent or a string, and updatedAt is absent or a number.
+// Returns true if every optional string prop on a page is either absent or a string, and createdAt and updatedAt are absent or numbers.
 function isValidPage(page: unknown): page is Page {
   if (!page || typeof page !== "object" || Array.isArray(page)) return false;
 
@@ -39,7 +39,11 @@ function isValidPage(page: unknown): page is Page {
   );
   if (!stringsValid) return false;
 
-  if ("updatedAt" in p && typeof p.updatedAt !== "number") return false;
+  if (
+    (p.createdAt !== undefined && typeof p.createdAt !== "number") ||
+    (p.updatedAt !== undefined && typeof p.updatedAt !== "number")
+  )
+    return false;
 
   return true;
 }

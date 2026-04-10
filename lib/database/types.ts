@@ -5,6 +5,7 @@ export interface Page {
   content?: string;
   coverImage?: string;
   icon?: string;
+  createdAt?: number;
   updatedAt?: number;
 }
 

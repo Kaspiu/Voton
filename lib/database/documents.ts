@@ -27,6 +27,7 @@ export async function addPage(page: Omit<Page, "id">): Promise<Page> {
   const newPage: Page = {
     id: generatePageId(),
     ...page,
+    createdAt: Date.now(),
     updatedAt: Date.now(),
   };
 
