@@ -267,7 +267,7 @@ export const SidebarItem = ({
       )}
 
       {isSearch && (
-        <kbd className="flex items-center justify-center gap-1 h-5 ml-auto mr-2 px-2 text-xs font-medium font-mono border border-muted-foreground/10 bg-secondary rounded-sm pointer-events-none select-none">
+        <kbd className="flex items-center justify-center gap-1 h-5 ml-auto mr-2 px-2 text-[0.625rem] font-medium font-mono border border-muted-foreground/10 bg-secondary rounded-sm pointer-events-none select-none">
           {isMac ? "⌘ + K" : "Ctrl + K"}
         </kbd>
       )}

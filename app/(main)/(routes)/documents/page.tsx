@@ -57,7 +57,7 @@ const DocumentsPage = () => {
 
       <div className="flex flex-col items-center gap-2 text-xs font-medium text-muted-foreground pointer-events-none select-none">
         <div className="flex items-center gap-2">
-          <span>Toggle sidebar</span>
+          <span>Show/Hide sidebar</span>
           <kbd className="flex items-center px-2 font-mono border bg-secondary rounded-sm">
             {isMac ? "⌘ + \\" : "Ctrl + \\"}
           </kbd>
