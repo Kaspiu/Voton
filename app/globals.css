@@ -120,34 +120,32 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+
   html {
     @apply scroll-smooth;
   }
-  .com-list-scroll,
-  .doc-list-scroll {
-    &::-webkit-scrollbar-track,
-    &::-webkit-scrollbar-corner {
-      @apply bg-transparent;
-    }
-    &::-webkit-scrollbar-thumb {
-      @apply rounded-full border border-transparent bg-clip-padding;
-    }
+
+  ::-webkit-scrollbar {
+    @apply w-2;
   }
 
-  .com-list-scroll,
-  .doc-list-scroll {
-    &::-webkit-scrollbar {
-      @apply w-2;
-    }
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
   }
 
-  .com-list-scroll::-webkit-scrollbar-thumb {
-    @apply bg-muted-foreground/20 hover:bg-muted-foreground/30;
+  ::-webkit-scrollbar-corner {
+    @apply bg-transparent;
   }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-muted-foreground/25 rounded-full border border-transparent bg-clip-padding hover:bg-muted-foreground/35;
+  }
+
   .doc-list-scroll::-webkit-scrollbar-thumb {
-    @apply bg-muted-foreground/10 hover:bg-muted-foreground/20;
+    @apply bg-muted-foreground/15 hover:bg-muted-foreground/25;
   }
 }
