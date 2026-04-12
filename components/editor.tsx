@@ -28,6 +28,7 @@ const handleUpload = (file: File): Promise<string> =>
   });
 
 // The default "file" block spec is omitted; all other defaults are preserved.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const { file: _file, ...blockSpecs } = defaultBlockSpecs;
 
 const customCodeBlock = createCodeBlockSpec({

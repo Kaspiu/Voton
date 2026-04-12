@@ -1,7 +1,6 @@
-// eslint-disable react-hooks/exhaustive-deps
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import {
@@ -46,7 +45,10 @@ const Navigation = () => {
   const params = useParams();
   const documentId = params.documentId as string | undefined;
   const router = useRouter();
-  const isMobile = useMediaQuery("(max-width: 1024px)");
+  // initializeWithValue: false prevents hydration mismatch.
+  const isMobile = useMediaQuery("(max-width: 1024px)", {
+    initializeWithValue: false,
+  });
   const onSearchOpen = useSearch((state) => state.onOpen);
   const onSettingsOpen = useSettings((state) => state.onOpen);
   const isCollapsed = useSidebar((state) => state.isCollapsed);
@@ -57,92 +59,83 @@ const Navigation = () => {
   const sidebarRef = useRef<HTMLElement>(null);
   const navbarRef = useRef<HTMLDivElement>(null);
 
-  const [isMounted, setIsMounted] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
   const [isDocumentFound, setIsDocumentFound] = useState(true);
 
-  // Ensures isMobile is only used in JSX after client hydration to avoid mismatch.
-  const effectiveIsMobile = isMounted && isMobile;
+  // Sets sidebar width and adjusts the navbar position directly in the DOM, skipping React state.
+  const applySidebarStyles = useCallback((sidebarWidth: string) => {
+    if (!sidebarRef.current || !navbarRef.current) return;
+    sidebarRef.current.style.width = sidebarWidth;
+    navbarRef.current.style.left = sidebarWidth;
+    navbarRef.current.style.width = `calc(100% - ${sidebarWidth})`;
+  }, []);
 
-  // Collapses the sidebar to zero width and expands the navbar to full width.
-  const collapseSidebar = () => {
-    if (sidebarRef.current && navbarRef.current) {
-      onCollapse();
-      setIsResetting(true);
+  // Hides the sidebar instantly without animation — safe to call inside useEffect bodies.
+  const collapseDOM = useCallback(() => {
+    onCollapse();
+    applySidebarStyles("0px");
+  }, [onCollapse, applySidebarStyles]);
 
-      sidebarRef.current.style.width = "0";
-      navbarRef.current.style.left = "0";
-      navbarRef.current.style.width = "100%";
+  // Hides the sidebar with a slide-out animation — call only from event handlers.
+  const collapseSidebar = useCallback(() => {
+    setIsResetting(true);
+    collapseDOM();
+    setTimeout(() => setIsResetting(false), 300);
+  }, [collapseDOM]);
 
-      setTimeout(() => setIsResetting(false), 300);
+  // Expands the sidebar to DEFAULT_SIDEBAR_WIDTH with a slide-in animation and saves width to localStorage.
+  const resetSidebarWidth = useCallback(() => {
+    onExpand();
+    setIsResetting(true);
+
+    if (isMobile) {
+      applySidebarStyles("100%");
+    } else {
+      applySidebarStyles(`${DEFAULT_SIDEBAR_WIDTH}px`);
+      localStorage.setItem("sidebar-width", String(DEFAULT_SIDEBAR_WIDTH));
     }
-  };
 
-  // Resets the sidebar to its default or saved width.
-  const resetSidebarWidth = () => {
-    if (sidebarRef.current && navbarRef.current) {
-      onExpand();
-      setIsResetting(true);
+    setTimeout(() => setIsResetting(false), 300);
+  }, [isMobile, onExpand, applySidebarStyles]);
 
-      const width = isMobile ? "100%" : `${DEFAULT_SIDEBAR_WIDTH}px`;
-      const navLeft = isMobile ? "100%" : `${DEFAULT_SIDEBAR_WIDTH}px`;
-      const navWidth = isMobile
-        ? "0"
-        : `calc(100% - ${DEFAULT_SIDEBAR_WIDTH}px)`;
+  // Starts the resize drag and registers scoped move/up listeners that clean up after themselves.
+  const handleSidebarResize = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      isResizing.current = true;
 
-      sidebarRef.current.style.width = width;
-      navbarRef.current.style.left = navLeft;
-      navbarRef.current.style.width = navWidth;
+      const onMouseMove = (event: MouseEvent) => {
+        if (!isResizing.current) return;
+        const newWidth = Math.min(
+          Math.max(event.clientX, MIN_SIDEBAR_WIDTH),
+          MAX_SIDEBAR_WIDTH,
+        );
+        applySidebarStyles(`${newWidth}px`);
+      };
 
-      if (!isMobile) {
-        localStorage.setItem("sidebar-width", String(DEFAULT_SIDEBAR_WIDTH));
-      }
+      // Defined after onMouseMove so both can reference each other without TDZ issues.
+      const onMouseUp = () => {
+        isResizing.current = false;
+        document.removeEventListener("mousemove", onMouseMove);
+        document.removeEventListener("mouseup", onMouseUp);
 
-      setTimeout(() => setIsResetting(false), 300);
-    }
-  };
+        if (sidebarRef.current?.style.width) {
+          localStorage.setItem(
+            "sidebar-width",
+            sidebarRef.current.style.width.replace("px", ""),
+          );
+        }
+      };
 
-  // Handles mouse movement during sidebar resize, clamping width between min and max.
-  const handleMouseMove = (e: MouseEvent) => {
-    if (!isResizing.current) return;
-
-    let newWidth = e.clientX;
-    if (newWidth < MIN_SIDEBAR_WIDTH) newWidth = MIN_SIDEBAR_WIDTH;
-    if (newWidth > MAX_SIDEBAR_WIDTH) newWidth = MAX_SIDEBAR_WIDTH;
-
-    if (sidebarRef.current && navbarRef.current) {
-      sidebarRef.current.style.width = `${newWidth}px`;
-      navbarRef.current.style.left = `${newWidth}px`;
-      navbarRef.current.style.width = `calc(100% - ${newWidth}px)`;
-    }
-  };
-
-  // Stops the resize operation and saves the final sidebar width to localStorage.
-  const handleMouseUp = () => {
-    isResizing.current = false;
-    document.removeEventListener("mousemove", handleMouseMove);
-    document.removeEventListener("mouseup", handleMouseUp);
-
-    if (sidebarRef.current && sidebarRef.current.style.width) {
-      localStorage.setItem(
-        "sidebar-width",
-        sidebarRef.current.style.width.replace("px", ""),
-      );
-    }
-  };
-
-  // Initiates the sidebar resize operation.
-  const handleSidebarResize = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    isResizing.current = true;
-    document.addEventListener("mousemove", handleMouseMove);
-    document.addEventListener("mouseup", handleMouseUp);
-  };
+      document.addEventListener("mousemove", onMouseMove);
+      document.addEventListener("mouseup", onMouseUp);
+    },
+    [applySidebarStyles],
+  );
 
   // Creates a new untitled page and navigates to it.
-  const onCreatePage = () => {
+  const onCreatePage = useCallback(() => {
     const promise = addPage({ title: "Untitled" }).then((page) => {
       if (page) router.push(`/documents/${page.id}`);
     });
@@ -152,9 +145,9 @@ const Navigation = () => {
       success: "New page created!",
       error: "Failed to create a new page.",
     });
-  };
+  }, [router]);
 
-  // Creates a new folder.
+  // Creates a new folder in the workspace.
   const onCreateFolder = () => {
     const promise = addFolder({ title: "New folder" });
 
@@ -165,36 +158,29 @@ const Navigation = () => {
     });
   };
 
-  // Marks the component as mounted so isMobile-dependent JSX can render correctly.
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  // Restores saved sidebar width on desktop, collapses on mobile.
+  // On mobile: collapses sidebar instantly. On desktop: restores saved width from localStorage.
   useEffect(() => {
     if (isMobile) {
-      collapseSidebar();
-    } else {
-      const savedWidth = localStorage.getItem("sidebar-width");
-      if (savedWidth && sidebarRef.current && navbarRef.current) {
-        onExpand();
-        sidebarRef.current.style.width = `${savedWidth}px`;
-        navbarRef.current.style.left = `${savedWidth}px`;
-        navbarRef.current.style.width = `calc(100% - ${savedWidth}px)`;
-      } else {
-        resetSidebarWidth();
-      }
+      collapseDOM();
+      return;
     }
-  }, [isMobile]);
 
-  // Collapses sidebar on mobile when route changes.
+    onExpand();
+    const savedWidth = localStorage.getItem("sidebar-width");
+    const width = savedWidth ?? String(DEFAULT_SIDEBAR_WIDTH);
+
+    if (!savedWidth)
+      localStorage.setItem("sidebar-width", String(DEFAULT_SIDEBAR_WIDTH));
+
+    applySidebarStyles(`${width}px`);
+  }, [isMobile, collapseDOM, onExpand, applySidebarStyles]);
+
+  // Closes the sidebar on every route change on mobile.
   useEffect(() => {
-    if (isMobile) {
-      collapseSidebar();
-    }
-  }, [isMobile, pathName]);
+    if (isMobile) collapseDOM();
+  }, [isMobile, pathName, collapseDOM]);
 
-  // Checks if the current document exists to determine navbar visibility.
+  // Checks if the current document exists to decide which navbar variant to render.
   useEffect(() => {
     const checkDocument = async () => {
       setIsDocumentFound(true);
@@ -206,7 +192,7 @@ const Navigation = () => {
     checkDocument();
   }, [documentId]);
 
-  // Register global keyboard shortcuts for sidebar toggle and new page creation.
+  // Ctrl/Cmd+\ toggles sidebar, Ctrl/Cmd+Alt+P creates a new page.
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.repeat) return;
@@ -227,7 +213,7 @@ const Navigation = () => {
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [isCollapsed]);
+  }, [isCollapsed, collapseSidebar, resetSidebarWidth, onCreatePage]);
 
   return (
     <>
@@ -236,7 +222,7 @@ const Navigation = () => {
         className={cn(
           "group/aside relative z-50 flex h-screen w-72 flex-col overflow-x-hidden overflow-y-auto bg-secondary text-muted-foreground",
           isResetting && "transition-all duration-200",
-          effectiveIsMobile && "w-0",
+          isMobile && "w-0",
         )}
       >
         <div className="flex items-center justify-between px-3 pt-4">
@@ -275,14 +261,14 @@ const Navigation = () => {
                 <ChevronRight
                   className={cn(
                     "ml-auto mr-2 h-4 w-4 shrink-0 transition-all",
-                    effectiveIsMobile && "group-data-[state=open]:rotate-90",
+                    isMobile && "group-data-[state=open]:rotate-90",
                   )}
                 />
               </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent
-              align={effectiveIsMobile ? "end" : "start"}
-              side={effectiveIsMobile ? "bottom" : "right"}
+              align={isMobile ? "end" : "start"}
+              side={isMobile ? "bottom" : "right"}
             >
               <DropdownMenuItem onClick={onCreatePage}>
                 <File className="h-4 w-4 shrink-0" /> New page
@@ -303,8 +289,8 @@ const Navigation = () => {
         </div>
 
         <div
-          onClick={!effectiveIsMobile ? resetSidebarWidth : undefined}
-          onMouseDown={!effectiveIsMobile ? handleSidebarResize : undefined}
+          onClick={!isMobile ? resetSidebarWidth : undefined}
+          onMouseDown={!isMobile ? handleSidebarResize : undefined}
           className="absolute top-0 right-0 h-full w-[3px] cursor-ew-resize bg-muted-foreground/10 opacity-0 transition-all group-hover/aside:opacity-100"
         />
       </aside>
@@ -314,7 +300,7 @@ const Navigation = () => {
         className={cn(
           "fixed top-0 left-72 z-50 w-[calc(100%-288px)]",
           isResetting && "transition-all duration-200",
-          effectiveIsMobile && "left-0 w-full",
+          isMobile && "left-0 w-full",
         )}
       >
         {documentId && isDocumentFound ? (
