@@ -104,7 +104,7 @@ export const Toolbar = ({ initialData }: ToolbarProps) => {
       {!!initialData.icon && (
         <div className="group/icon mb-2 flex w-fit items-center">
           <EmojiPickerPopover onEmojiClick={onEmojiSelect}>
-            <p className="cursor-pointer text-6xl transition-all hover:opacity-75">
+            <p className="cursor-pointer text-6xl max-lg:text-5xl transition-all hover:opacity-75">
               {initialData.icon}
             </p>
           </EmojiPickerPopover>
@@ -126,13 +126,13 @@ export const Toolbar = ({ initialData }: ToolbarProps) => {
           onBlur={disableInput}
           onKeyDown={onEnterKeyDown}
           onChange={onChange}
-          className="flex w-full items-center text-6xl font-bold text-[#3F3F3F] focus:outline-none dark:text-[#CFCFCF]"
+          className="flex h-15 max-lg:h-12 w-full items-center text-6xl max-lg:text-5xl font-bold text-[#3F3F3F] focus:outline-none dark:text-[#CFCFCF]"
         />
       ) : (
         <div
           role="button"
           onClick={enableInput}
-          className="flex h-[80px] max-w-fit items-center truncate text-6xl font-bold text-[#3F3F3F] dark:text-[#CFCFCF]"
+          className="flex max-w-fit items-center text-6xl max-lg:text-5xl font-bold text-[#3F3F3F] dark:text-[#CFCFCF]"
         >
           {initialData.title}
         </div>

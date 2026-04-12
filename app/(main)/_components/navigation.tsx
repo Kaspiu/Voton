@@ -57,8 +57,12 @@ const Navigation = () => {
   const sidebarRef = useRef<HTMLElement>(null);
   const navbarRef = useRef<HTMLDivElement>(null);
 
+  const [isMounted, setIsMounted] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
   const [isDocumentFound, setIsDocumentFound] = useState(true);
+
+  // Ensures isMobile is only used in JSX after client hydration to avoid mismatch.
+  const effectiveIsMobile = isMounted && isMobile;
 
   // Collapses the sidebar to zero width and expands the navbar to full width.
   const collapseSidebar = () => {
@@ -161,6 +165,11 @@ const Navigation = () => {
     });
   };
 
+  // Marks the component as mounted so isMobile-dependent JSX can render correctly.
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   // Restores saved sidebar width on desktop, collapses on mobile.
   useEffect(() => {
     if (isMobile) {
@@ -197,7 +206,7 @@ const Navigation = () => {
     checkDocument();
   }, [documentId]);
 
-  // Register global keyboard shortcuts for sidebar toggle and new page creation
+  // Register global keyboard shortcuts for sidebar toggle and new page creation.
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.repeat) return;
@@ -227,7 +236,7 @@ const Navigation = () => {
         className={cn(
           "group/aside relative z-50 flex h-screen w-72 flex-col overflow-x-hidden overflow-y-auto bg-secondary text-muted-foreground",
           isResetting && "transition-all duration-200",
-          isMobile && "w-0",
+          effectiveIsMobile && "w-0",
         )}
       >
         <div className="flex items-center justify-between px-3 pt-4">
@@ -266,14 +275,14 @@ const Navigation = () => {
                 <ChevronRight
                   className={cn(
                     "ml-auto mr-2 h-4 w-4 shrink-0 transition-all",
-                    isMobile && "group-data-[state=open]:rotate-90",
+                    effectiveIsMobile && "group-data-[state=open]:rotate-90",
                   )}
                 />
               </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent
-              align={isMobile ? "end" : "start"}
-              side={isMobile ? "bottom" : "right"}
+              align={effectiveIsMobile ? "end" : "start"}
+              side={effectiveIsMobile ? "bottom" : "right"}
             >
               <DropdownMenuItem onClick={onCreatePage}>
                 <File className="h-4 w-4 shrink-0" /> New page
@@ -294,8 +303,8 @@ const Navigation = () => {
         </div>
 
         <div
-          onClick={!isMobile ? resetSidebarWidth : undefined}
-          onMouseDown={!isMobile ? handleSidebarResize : undefined}
+          onClick={!effectiveIsMobile ? resetSidebarWidth : undefined}
+          onMouseDown={!effectiveIsMobile ? handleSidebarResize : undefined}
           className="absolute top-0 right-0 h-full w-[3px] cursor-ew-resize bg-muted-foreground/10 opacity-0 transition-all group-hover/aside:opacity-100"
         />
       </aside>
@@ -305,7 +314,7 @@ const Navigation = () => {
         className={cn(
           "fixed top-0 left-72 z-50 w-[calc(100%-288px)]",
           isResetting && "transition-all duration-200",
-          isMobile && "left-0 w-full",
+          effectiveIsMobile && "left-0 w-full",
         )}
       >
         {documentId && isDocumentFound ? (

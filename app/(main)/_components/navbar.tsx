@@ -144,7 +144,7 @@ export const Navbar = ({ isCollapsed, onResetWidth }: NavbarProps) => {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent
                     side="bottom"
-                    className="flex flex-col items-center gap-0.5 text-xs font-medium text-muted-foreground"
+                    className="flex flex-col gap-0.5 text-xs font-medium text-muted-foreground"
                   >
                     <span className="px-2 pt-1">{formattedUpdatedAt}</span>
                     <span className="px-2 pb-1 text-muted-foreground/75">

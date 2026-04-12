@@ -44,7 +44,7 @@ const DocumentIdPage = () => {
     return (
       <div className="mt-[62px]">
         <Skeleton className="h-[15vh] w-full" />
-        <div className="mt-19 max-w-5xl space-y-4 pl-21">
+        <div className="mt-17 max-w-5xl space-y-4 pl-21">
           <Skeleton className="mb-15 h-14 w-1/4" />
           <Skeleton className="h-5 w-3/4 rounded-sm" />
           <Skeleton className="h-5 w-2/5 rounded-sm" />
