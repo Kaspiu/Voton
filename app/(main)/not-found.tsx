@@ -5,8 +5,8 @@ import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 
-const ERROR_IMAGE_SRC = "/error.png";
-const ERROR_IMAGE_SRC_DARK = "/error-dark.png";
+const ERROR_IMAGE_SRC = "/error.webp";
+const ERROR_IMAGE_SRC_DARK = "/error-dark.webp";
 const ERROR_IMAGE_WIDTH = 300;
 const ERROR_IMAGE_HEIGHT = 150;
 
