@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { notFound, useParams } from "next/navigation";
 
@@ -11,11 +11,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { getPage, updatePage } from "@/lib/database/documents";
 import { Page } from "@/lib/database/types";
 
+const Editor = dynamic(() => import("@/components/editor"), { ssr: false });
+
 const DocumentIdPage = () => {
-  const Editor = useMemo(
-    () => dynamic(() => import("@/components/editor"), { ssr: false }),
-    [],
-  );
 
   const [page, setPage] = useState<Page | null | undefined>(undefined);
   const params = useParams();
