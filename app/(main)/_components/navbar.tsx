@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Clock, Ellipsis, Menu, Trash, X } from "lucide-react";
+import { Clock, Ellipsis, TextInitial, Menu, Trash, X } from "lucide-react";
 import { toast } from "sonner";
 
 import { DeleteModal } from "@/components/modals/delete-modal";
@@ -15,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { deletePage, getPage } from "@/lib/database/documents";
+import { useWordCount } from "@/hooks/use-word-count";
 
 const MS_PER_MINUTE = 60000;
 const MS_PER_HOUR = 60 * MS_PER_MINUTE;
@@ -69,6 +70,9 @@ export const Navbar = ({ isCollapsed, onResetWidth }: NavbarProps) => {
 
   const formattedCreatedAt = createdAt ? formatDate(createdAt) : "";
   const formattedUpdatedAt = updatedAt ? formatRelativeTime(updatedAt) : "";
+
+  const wordCount = useWordCount((state) => state.wordCount);
+  const characterCount = useWordCount((state) => state.characterCount);
 
   // Keeps navbar metadata in sync with external document updates
   useEffect(() => {
@@ -129,7 +133,7 @@ export const Navbar = ({ isCollapsed, onResetWidth }: NavbarProps) => {
 
         <div className="flex items-center justify-center gap-2">
           {title === undefined ? (
-            <Skeleton className="h-6 w-17" />
+            <Skeleton className="h-6 w-26.5" />
           ) : (
             <>
               {updatedAt && (
@@ -153,6 +157,29 @@ export const Navbar = ({ isCollapsed, onResetWidth }: NavbarProps) => {
                   </DropdownMenuContent>
                 </DropdownMenu>
               )}
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <div
+                    role="button"
+                    className="h-fit w-fit cursor-pointer rounded-md p-[7px] text-muted-foreground transition-all hover:bg-muted-foreground/10 data-[state=open]:bg-muted-foreground/10"
+                  >
+                    <TextInitial className="h-4 w-4 shrink-0" />
+                  </div>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  side="bottom"
+                  className="flex flex-col gap-0.5 text-xs font-medium text-muted-foreground"
+                >
+                  <span className="px-2 pt-1">
+                    Word count: {wordCount} {wordCount === 1 ? "word" : "words"}
+                  </span>
+                  <span className="px-2 pb-1 text-muted-foreground/75">
+                    Character count: {characterCount}{" "}
+                    {characterCount === 1 ? "character" : "characters"}
+                  </span>
+                </DropdownMenuContent>
+              </DropdownMenu>
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
