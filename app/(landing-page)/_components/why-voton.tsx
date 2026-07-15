@@ -17,7 +17,7 @@ const REASONS = [
     icon: Target,
     title: "Focused simplicity",
     description:
-      "No distractions. A clean interface designed to help you think, write, and organize.",
+      "No distractions. A clean interface with a dedicated Focus mode designed to help you think, write, and organize.",
   },
 ];
 

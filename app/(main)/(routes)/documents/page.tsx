@@ -69,6 +69,13 @@ const DocumentsPage = () => {
             {isMac ? "⌘ + ⌥ + P" : "Ctrl + Alt + P"}
           </kbd>
         </div>
+
+        <div className="flex items-center gap-2">
+          <span>Toggle focus mode</span>
+          <kbd className="flex items-center px-2 font-mono border bg-secondary rounded-sm">
+            {isMac ? "⌘ + ⌥ + F" : "Ctrl + Alt + F"}
+          </kbd>
+        </div>
       </div>
     </div>
   );

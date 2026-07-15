@@ -3,7 +3,7 @@ import { DBSchema, IDBPDatabase, IDBPTransaction, openDB } from "idb";
 import { Folder, Page } from "./types";
 
 const DB_NAME = "VotonDB";
-const DB_VERSION = 5;
+const DB_VERSION = 6;
 
 interface VotonDBSchema extends DBSchema {
   pages: {

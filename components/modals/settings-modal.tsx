@@ -14,6 +14,9 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
+import { useFocusMode } from "@/hooks/use-focus-mode";
+import { useIsMac } from "@/hooks/use-is-mac";
 import { useSettings } from "@/hooks/use-settings";
 import {
   clearAllData,
@@ -38,7 +41,7 @@ const SettingsItem = ({
 }: SettingsItemProps) => {
   return (
     <div className="flex items-center justify-between">
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2 mr-8">
         <Label>{title}</Label>
         <span className="text-xs text-muted-foreground">{description}</span>
       </div>
@@ -61,6 +64,8 @@ const SettingsItem = ({
 export const SettingsModal = () => {
   const router = useRouter();
   const { isOpen, onClose } = useSettings();
+  const { isFocusMode, setFocusMode } = useFocusMode();
+  const isMac = useIsMac();
 
   // Triggers a data import, closes the modal on success, and shows a toast for each state.
   const onImportData = () => {
@@ -128,13 +133,37 @@ export const SettingsModal = () => {
 
         <p className="text-lg font-semibold leading-none">Appearance</p>
         <div className="flex items-center justify-between">
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 mr-12">
             <Label>Theme</Label>
             <span className="text-xs text-muted-foreground">
               Switch between light and dark mode.
             </span>
           </div>
           <ModeToggle />
+        </div>
+
+        <Separator />
+
+        <p className="text-lg font-semibold leading-none">Layout</p>
+        <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-2 mr-12">
+            <Label>Focus mode</Label>
+            <span className="text-xs text-muted-foreground">
+              Hide the sidebar and navbar to minimize distractions while
+              working.
+            </span>
+            <span className="flex items-center gap-2 text-xs text-muted-foreground">
+              Shortcut:
+              <kbd className="flex items-center rounded-sm border bg-secondary px-2 font-mono text-[10px]">
+                {isMac ? "⌘ + ⌥ + F" : "Ctrl + Alt + F"}
+              </kbd>
+            </span>
+          </div>
+          <Switch
+            checked={isFocusMode}
+            onCheckedChange={setFocusMode}
+            className="cursor-pointer"
+          />
         </div>
       </DialogContent>
     </Dialog>

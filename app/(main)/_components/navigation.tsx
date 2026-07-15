@@ -25,6 +25,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useSearch } from "@/hooks/use-search";
+import { useFocusMode } from "@/hooks/use-focus-mode";
 import { useSettings } from "@/hooks/use-settings";
 import { useSidebar } from "@/hooks/use-sidebar";
 import { addFolder, addPage, getPage } from "@/lib/database/documents";
@@ -39,6 +40,7 @@ const MAX_SIDEBAR_WIDTH = 448;
 
 const SIDEBAR_TOGGLE_KEY = "\\";
 const NEW_PAGE_KEY = "p";
+const FOCUS_MODE_KEY = "f";
 
 const Navigation = () => {
   const pathName = usePathname();
@@ -51,6 +53,8 @@ const Navigation = () => {
   });
   const onSearchOpen = useSearch((state) => state.onOpen);
   const onSettingsOpen = useSettings((state) => state.onOpen);
+  const toggleFocusMode = useFocusMode((state) => state.toggleFocusMode);
+  const isFocusMode = useFocusMode((state) => state.isFocusMode);
   const isCollapsed = useSidebar((state) => state.isCollapsed);
   const onCollapse = useSidebar((state) => state.onCollapse);
   const onExpand = useSidebar((state) => state.onExpand);
@@ -58,6 +62,7 @@ const Navigation = () => {
   const isResizing = useRef(false);
   const sidebarRef = useRef<HTMLElement>(null);
   const navbarRef = useRef<HTMLDivElement>(null);
+  const isFocusCollapsed = useRef(false);
 
   const [isResetting, setIsResetting] = useState(false);
   const [isDocumentFound, setIsDocumentFound] = useState(true);
@@ -83,7 +88,7 @@ const Navigation = () => {
     setTimeout(() => setIsResetting(false), 300);
   }, [collapseDOM]);
 
-  // Expands the sidebar to DEFAULT_SIDEBAR_WIDTH with a slide-in animation and saves width to localStorage.
+  // Expands the sidebar to DEFAULT_SIDEBAR_WIDTH with a slide-in animation.
   const resetSidebarWidth = useCallback(() => {
     onExpand();
     setIsResetting(true);
@@ -92,7 +97,6 @@ const Navigation = () => {
       applySidebarStyles("100%");
     } else {
       applySidebarStyles(`${DEFAULT_SIDEBAR_WIDTH}px`);
-      localStorage.setItem("sidebar-width", String(DEFAULT_SIDEBAR_WIDTH));
     }
 
     setTimeout(() => setIsResetting(false), 300);
@@ -119,13 +123,6 @@ const Navigation = () => {
         isResizing.current = false;
         document.removeEventListener("mousemove", onMouseMove);
         document.removeEventListener("mouseup", onMouseUp);
-
-        if (sidebarRef.current?.style.width) {
-          localStorage.setItem(
-            "sidebar-width",
-            sidebarRef.current.style.width.replace("px", ""),
-          );
-        }
       };
 
       document.addEventListener("mousemove", onMouseMove);
@@ -158,7 +155,7 @@ const Navigation = () => {
     });
   };
 
-  // On mobile: collapses sidebar instantly. On desktop: restores saved width from localStorage.
+  // On mobile: collapses sidebar instantly. On desktop: sets default width.
   useEffect(() => {
     if (isMobile) {
       collapseDOM();
@@ -166,13 +163,7 @@ const Navigation = () => {
     }
 
     onExpand();
-    const savedWidth = localStorage.getItem("sidebar-width");
-    const width = savedWidth ?? String(DEFAULT_SIDEBAR_WIDTH);
-
-    if (!savedWidth)
-      localStorage.setItem("sidebar-width", String(DEFAULT_SIDEBAR_WIDTH));
-
-    applySidebarStyles(`${width}px`);
+    applySidebarStyles(`${DEFAULT_SIDEBAR_WIDTH}px`);
   }, [isMobile, collapseDOM, onExpand, applySidebarStyles]);
 
   // Closes the sidebar on every route change on mobile.
@@ -192,7 +183,22 @@ const Navigation = () => {
     checkDocument();
   }, [documentId]);
 
-  // Ctrl/Cmd+\ toggles sidebar, Ctrl/Cmd+Alt+P creates a new page.
+  // Collapses sidebar when focus mode is turned on and inside a document page, restores it otherwise.
+  useEffect(() => {
+    if (isMobile) return;
+
+    const shouldCollapse = isFocusMode && documentId;
+
+    if (shouldCollapse && !isFocusCollapsed.current) {
+      collapseSidebar();
+      isFocusCollapsed.current = true;
+    } else if (!shouldCollapse && isFocusCollapsed.current) {
+      resetSidebarWidth();
+      isFocusCollapsed.current = false;
+    }
+  }, [isFocusMode, documentId, isMobile, collapseSidebar, resetSidebarWidth]);
+
+  // Handle keyboard shortcuts for sidebar toggle, new page, and focus mode.
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.repeat) return;
@@ -209,11 +215,21 @@ const Navigation = () => {
         e.preventDefault();
         onCreatePage();
       }
+      if (e.key === FOCUS_MODE_KEY && (e.ctrlKey || e.metaKey) && e.altKey) {
+        e.preventDefault();
+        toggleFocusMode();
+      }
     };
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [isCollapsed, collapseSidebar, resetSidebarWidth, onCreatePage]);
+  }, [
+    isCollapsed,
+    collapseSidebar,
+    resetSidebarWidth,
+    onCreatePage,
+    toggleFocusMode,
+  ]);
 
   return (
     <>
@@ -301,6 +317,11 @@ const Navigation = () => {
           "fixed top-0 left-72 z-50 w-[calc(100%-288px)]",
           isResetting && "transition-all duration-200",
           isMobile && "left-0 w-full",
+          !isMobile &&
+            isCollapsed &&
+            isFocusMode &&
+            documentId &&
+            "opacity-0 hover:opacity-100 has-data-[state=open]:opacity-100 transition-all duration-200",
         )}
       >
         {documentId && isDocumentFound ? (

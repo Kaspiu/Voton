@@ -13,6 +13,7 @@ A privacy-focused note-taking web application inspired by Notion and Obsidian an
 - **Data portability** - Export your entire workspace as JSON, import from JSON or Markdown
 - **Auto-save** - Changes saved instantly with automatic timestamps
 - **Live text statistics** - Keep track of your text length in real-time
+- **Focus mode** - Hide navbar and sidebar to minimize distractions
 
 ## Tech Stack
 

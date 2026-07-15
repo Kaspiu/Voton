@@ -45,7 +45,7 @@ const SECOND_ROW_FEATURES: FeatureCardProps[] = [
     icon: FileText,
     title: "Rich text editing",
     description:
-      "A clean, distraction-free editor. Format text with headers, lists, and more. Focus on ideas, not formatting.",
+      "A clean, distraction-free editor. Format text with headers, lists, and more. Track your progress with live word and character counts.",
   },
 ];
 
