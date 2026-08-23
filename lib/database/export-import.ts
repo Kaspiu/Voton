@@ -8,7 +8,7 @@ import {
 } from "./documents";
 import { Folder, Page } from "./types";
 
-const EXPORT_VERSION = "0.2.6";
+const EXPORT_VERSION = "0.2.61";
 const ACCEPTED_FILE_TYPES = ".json,.md";
 
 export interface VotonExportData {
