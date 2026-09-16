@@ -165,6 +165,10 @@ export const SettingsModal = () => {
             className="cursor-pointer"
           />
         </div>
+
+        <Separator />
+
+        <div className="text-xs text-muted-foreground font-mono">v0.2.62</div>
       </DialogContent>
     </Dialog>
   );
