@@ -68,7 +68,6 @@ export const ImageDropzone = ({
       onDrop,
       accept: ACCEPTED_MIME_TYPES,
       maxSize: MAX_FILE_SIZE_BYTES,
-      maxFiles: 1,
       multiple: false,
     });
 
