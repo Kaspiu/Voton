@@ -19,7 +19,7 @@ const Heading = () => {
           className="group h-11 cursor-pointer text-base max-lg:h-10 max-lg:text-sm"
         >
           <Link href="/documents">
-            Start thinking
+            Start creating
             <ArrowRight className="-rotate-45 transition-all duration-200 group-hover:rotate-0" />
           </Link>
         </Button>

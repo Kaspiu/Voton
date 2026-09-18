@@ -55,7 +55,7 @@ const FeatureCard = ({ icon: Icon, title, description }: FeatureCardProps) => (
       <Icon className="h-8 w-8 max-lg:h-6 max-lg:w-6" />
     </div>
     <h3 className="text-2xl font-bold max-lg:text-xl">{title}</h3>
-    <p className="text-base leading-relaxed text-muted-foreground transition-all group-hover:text-primary/70 max-sm:text-sm">
+    <p className="text-lg leading-relaxed text-muted-foreground transition-all group-hover:text-primary/70 max-sm:text-base">
       {description}
     </p>
   </div>

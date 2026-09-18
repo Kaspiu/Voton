@@ -1,20 +1,15 @@
-import { ShieldCheck, Target, Zap } from "lucide-react";
-
 const REASONS = [
   {
-    icon: Zap,
     title: "Instant performance",
     description:
       "Minimal loading times. IndexedDB storage ensures instant access, millisecond search, and auto-saving.",
   },
   {
-    icon: ShieldCheck,
     title: "True privacy",
     description:
       "Local-first design. No servers, no tracking. Your data stays securely on your device.",
   },
   {
-    icon: Target,
     title: "Focused simplicity",
     description:
       "No distractions. A clean interface with a dedicated Focus mode designed to help you think, write, and organize.",
@@ -29,15 +24,12 @@ const WhyVoton = () => {
       </h2>
 
       <div className="flex max-w-6xl justify-center max-xl:max-w-3xl max-lg:max-w-3/4 max-lg:flex-col max-lg:items-center">
-        {REASONS.map(({ icon: Icon, title, description }) => (
+        {REASONS.map(({ title, description }) => (
           <div
             key={title}
             className="group flex w-full flex-col items-center gap-4 rounded-lg p-8 text-center transition-all hover:bg-accent max-lg:max-w-4/5 max-lg:rounded-md dark:hover:bg-input/30"
           >
-            <div className="rounded-md bg-primary p-3 text-primary-foreground transition-all group-hover:-translate-y-1 group-hover:shadow-sm">
-              <Icon className="h-6 w-6 max-lg:h-4 max-lg:w-4" />
-            </div>
-            <h3 className="text-3xl font-bold max-lg:text-2xl">{title}</h3>
+            <h3 className="text-2xl font-bold max-lg:text-xl">{title}</h3>
             <p className="text-lg leading-relaxed text-muted-foreground max-sm:text-base">
               {description}
             </p>
